@@ -5,19 +5,19 @@ macro_rules! create_indexed_valued_enum {
         [Delegators $($other_features:tt)*]
     )=>{
         impl $enum_name where Self: Sized + 'static {
-            pub fn index(&self) -> usize { Indexed::index(self) }
+            pub fn index(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::index(self) }
 
-            pub fn from_index_opt(index: usize) -> Option<Self> { Indexed::from_index_opt(index) }
+            pub fn from_index_opt(index: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_index_opt(index) }
 
-            pub fn from_index(index: usize) -> Self { Indexed::from_index(index) }
+            pub fn from_index(index: usize) -> Self { indexed_valued_enums::indexed_enum::Indexed::from_index(index) }
 
-            pub fn value_opt(&self) -> Option<$value_type> { Valued::value_opt(self) }
+            pub fn value_opt(&self) -> Option<$value_type> { indexed_valued_enums::valued_enum::Valued::value_opt(self) }
 
-            pub fn value(&self) -> $value_type { Valued::value(self) }
+            pub fn value(&self) -> $value_type { indexed_valued_enums::valued_enum::Valued::value(self) }
 
-            pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> { Valued::value_to_variant_opt(value) }
+            pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> { indexed_valued_enums::valued_enum::Valued::value_to_variant_opt(value) }
 
-            pub fn value_to_variant(value: &$value_type) -> Self { Valued::value_to_variant(value) }
+            pub fn value_to_variant(value: &$value_type) -> Self { indexed_valued_enums::valued_enum::Valued::value_to_variant(value) }
         }
 
         create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
