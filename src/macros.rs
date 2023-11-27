@@ -1,5 +1,31 @@
+/*
+
+ */
+
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
+    (process features
+        [$enum_name:ident, $value_type:ty],
+        [delegators $($other_features:tt)*]
+    )=>{
+        impl $enum_name where Self: Sized + 'static {
+            pub fn index(&self) -> usize { Indexed::index(self) }
+
+            pub fn from_index_opt(index: usize) -> Option<Self> { Indexed::from_index_opt(index) }
+
+            pub fn from_index(index: usize) -> Self { Indexed::from_index(index) }
+
+            pub fn value_opt(&self) -> Option<Self::Value> { Valued::value_opt(self) }
+
+            pub fn value(&self) -> Self::Value { Valued::value(self) }
+
+            pub fn value_to_variant_opt(value: &Self::Value) -> Option<Self> { Valued::value_to_variant_opt(value) }
+
+            pub fn value_to_variant(value: &Self::Value) -> Self { Valued::value_to_variant(value) }
+        }
+
+        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
+    };
     (process features
         [$enum_name:ident, $value_type:ty],
         [DerefToValue $($other_features:tt)*]
