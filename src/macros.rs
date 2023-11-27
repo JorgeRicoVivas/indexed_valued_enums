@@ -5,11 +5,11 @@ macro_rules! create_indexed_valued_enum {
         [Delegators $($other_features:tt)*]
     )=>{
         impl $enum_name {
-            pub fn index(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::index(self) }
+            pub fn discriminant(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::discriminant(self) }
 
-            pub fn from_index_opt(index: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_index_opt(index) }
+            pub fn from_discriminant_opt(discriminant: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_discriminant_opt(discriminant) }
 
-            pub fn from_index(index: usize) -> Self { indexed_valued_enums::indexed_enum::Indexed::from_index(index) }
+            pub fn from_discriminant(discriminant: usize) -> Self { indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant) }
 
             pub fn value_opt(&self) -> Option<$value_type> { indexed_valued_enums::valued_enum::Valued::value_opt(self) }
 
