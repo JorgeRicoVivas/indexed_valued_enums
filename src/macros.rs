@@ -38,6 +38,18 @@ macro_rules! create_indexed_valued_enum {
     };
     (process features
         [$enum_name:ident, $value_type:ty],
+        [Clone $($other_features:tt)*]
+    )=>{
+        impl core::clone::Clone for $enum_name{
+            fn clone(&self) -> Self {
+                Self::from_index(self.index())
+            }
+        }
+
+        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
+    };
+    (process features
+        [$enum_name:ident, $value_type:ty],
         [Serialize $($other_features:tt)*]
     )=>{
         impl serde::Serialize for $enum_name {
