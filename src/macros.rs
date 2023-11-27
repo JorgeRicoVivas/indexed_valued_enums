@@ -1,7 +1,3 @@
-/*
-
- */
-
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
     (process features
