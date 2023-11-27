@@ -4,7 +4,7 @@ macro_rules! create_indexed_valued_enum {
         [$enum_name:ident, $value_type:ty],
         [Delegators $($other_features:tt)*]
     )=>{
-        impl $enum_name where Self: Sized + 'static {
+        impl $enum_name {
             pub fn index(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::index(self) }
 
             pub fn from_index_opt(index: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_index_opt(index) }
