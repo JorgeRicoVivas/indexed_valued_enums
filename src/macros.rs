@@ -43,7 +43,7 @@ macro_rules! create_indexed_valued_enum {
         impl core::clone::Clone for Number {
             fn clone(&self) -> Self {
                 let index = indexed_valued_enums::indexed_enum::Indexed::index(self);
-                indexed_valued_enums::indexed_enum::Indexed::from_discriminant(index)
+                indexed_valued_enums::indexed_enum::Indexed::from_index(index)
             }
         }
 
