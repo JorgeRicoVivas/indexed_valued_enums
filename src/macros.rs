@@ -30,7 +30,7 @@ macro_rules! create_indexed_valued_enum {
             type Target = $value_type;
 
             fn deref(&self) -> &Self::Target {
-                &Self::VALUES[self.index()]
+                &<Self as indexed_valued_enums::valued_enum::Valued>::VALUES[self.index()]
             }
         }
 
