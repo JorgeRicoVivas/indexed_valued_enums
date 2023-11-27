@@ -6,7 +6,7 @@
 macro_rules! create_indexed_valued_enum {
     (process features
         [$enum_name:ident, $value_type:ty],
-        [delegators $($other_features:tt)*]
+        [Delegators $($other_features:tt)*]
     )=>{
         impl $enum_name where Self: Sized + 'static {
             pub fn index(&self) -> usize { Indexed::index(self) }
