@@ -40,9 +40,10 @@ macro_rules! create_indexed_valued_enum {
         [$enum_name:ident, $value_type:ty],
         [Clone $($other_features:tt)*]
     )=>{
-        impl core::clone::Clone for $enum_name{
+        impl core::clone::Clone for Number {
             fn clone(&self) -> Self {
-                Self::from_index(self.index())
+                let index = indexed_valued_enums::indexed_enum::Indexed::index(self);
+                indexed_valued_enums::indexed_enum::Indexed::from_discriminant(index)
             }
         }
 
