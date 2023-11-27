@@ -63,7 +63,7 @@ macro_rules! create_indexed_valued_enum {
             $($variants),+
         }
 
-        impl indexed_valued_enums::valued_enum::Indexed for $enum_name {
+        impl indexed_valued_enums::indexed_enum::Indexed for $enum_name {
             const VARIANTS: &'static [ Self ] = &[$($enum_name::$variants),+];
         }
 
