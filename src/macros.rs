@@ -21,7 +21,7 @@ macro_rules! create_indexed_valued_enum {
     };
         (process features
         [$enum_name:ident, $value_type:ty],
-        [ValueToVariant delegators $($other_features:tt)*]
+        [ValueToVariantDelegators $($other_features:tt)*]
     )=>{
         impl $enum_name {
             pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> { indexed_valued_enums::valued_enum::Valued::value_to_variant_opt(value) }
