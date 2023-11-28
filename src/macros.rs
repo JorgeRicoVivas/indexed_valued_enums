@@ -14,6 +14,10 @@ macro_rules! create_indexed_valued_enum {
             pub fn value_opt(&self) -> Option<$value_type> { indexed_valued_enums::valued_enum::Valued::value_opt(self) }
 
             pub fn value(&self) -> $value_type { indexed_valued_enums::valued_enum::Valued::value(self) }
+
+            pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> where $value_type:PartialEq { indexed_valued_enums::valued_enum::Valued::value_to_variant_opt(value) }
+
+            pub fn value_to_variant(value: &$value_type) -> Self where $value_type:PartialEq { indexed_valued_enums::valued_enum::Valued::value_to_variant(value) }
         }
 
         create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
