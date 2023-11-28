@@ -19,6 +19,18 @@ macro_rules! create_indexed_valued_enum {
 
         create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
     };
+        (process features
+        [$enum_name:ident, $value_type:ty],
+        [Value to variant delegators $($other_features:tt)*]
+    )=>{
+        impl $enum_name {
+            pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> { indexed_valued_enums::valued_enum::Valued::value_to_variant_opt(value) }
+
+            pub fn value_to_variant(value: &$value_type) -> Self { indexed_valued_enums::valued_enum::Valued::value_to_variant(value) }
+        }
+
+        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
+    };
     (process features
         [$enum_name:ident, $value_type:ty],
         [DerefToValue $($other_features:tt)*]
