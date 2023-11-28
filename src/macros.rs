@@ -85,7 +85,7 @@ macro_rules! create_indexed_valued_enum {
         [$enum_name:ident, $value_type:ty],
         [NanoSerBin $($other_features:tt)*]
     )=>{
-        impl nanoserde::DeBin for $enum_name {
+        impl nanoserde::SerBin for $enum_name {
             fn ser_bin(&self, output: &mut Vec<u8>) {
                 self.index().ser_bin(output)
             }
