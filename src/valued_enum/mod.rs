@@ -1,7 +1,7 @@
 use crate::indexed_enum::Indexed;
 
 pub trait Valued: Indexed {
-    type Value: PartialEq;
+    type Value;
 
     const VALUES: &'static [Self::Value];
 
@@ -14,7 +14,7 @@ pub trait Valued: Indexed {
         self.value_opt().unwrap()
     }
 
-    fn value_to_variant_opt(value: &Self::Value) -> Option<Self> {
+    fn value_to_variant_opt(value: &Self::Value) -> Option<Self> where Self::Value:PartialEq {
         let index = Self::VALUES.iter()
             .enumerate()
             .filter(|(_, variant_value)| value.eq(variant_value)).next()
@@ -22,7 +22,7 @@ pub trait Valued: Indexed {
         Self::from_index_opt(index?)
     }
 
-    fn value_to_variant(value: &Self::Value) -> Self {
+    fn value_to_variant(value: &Self::Value) -> Self where Self::Value:PartialEq {
         Self::value_to_variant_opt(value).unwrap()
     }
 }
