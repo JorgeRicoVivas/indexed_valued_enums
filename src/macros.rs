@@ -40,7 +40,7 @@ macro_rules! create_indexed_valued_enum {
         impl core::clone::Clone for $enum_name {
             fn clone(&self) -> Self {
                 let discriminant = indexed_valued_enums::indexed_enum::Indexed::discriminant(self);
-                indexed_valued_enums::indexed_enum::Indexed::from_index(discriminant)
+                indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant)
             }
         }
 
