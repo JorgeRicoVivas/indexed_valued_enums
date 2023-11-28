@@ -79,6 +79,70 @@ macro_rules! create_indexed_valued_enum {
             }
         }
 
+        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
+    };
+    (process features
+        [$enum_name:ident, $value_type:ty],
+        [NanoSerBin $($other_features:tt)*]
+    )=>{
+        impl nanoserde::DeBin for $enum_name {
+            fn ser_bin(&self, output: &mut Vec<u8>) {
+                self.index().ser_bin(output)
+            }
+        }
+
+        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
+    };
+    (process features
+        [$enum_name:ident, $value_type:ty],
+        [NanoDeBin $($other_features:tt)*]
+    )=>{
+        impl nanoserde::DeBin for $enum_name {
+            fn de_bin(offset: &mut usize, bytes: &[u8]) -> core::result::Result<Self, nanoserde::DeBinErr> {
+                core::result::Result::Ok(
+                    $enum_name::from_index_opt(nanoserde::DeBin::de_bin(offset, bytes)?)
+                        .ok_or_else(|| nanoserde::DeBinErr {
+                            o: *offset,
+                            l: core::mem::size_of::<usize>(),
+                            s: bytes.len(),
+                        })?)
+            }
+        }
+
+        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
+    };
+
+    (process features
+        [$enum_name:ident, $value_type:ty],
+        [NanoSerJson $($other_features:tt)*]
+    )=>{
+        impl nanoserde::SerJson for $enum_name {
+            fn ser_json(&self, _d: usize, state: &mut nanoserde::SerJsonState) {
+                state.out.push_str(&self.index().to_string());
+            }
+        }
+
+        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
+    };
+    (process features
+        [$enum_name:ident, $value_type:ty],
+        [NanoDeJson $($other_features:tt)*]
+    )=>{
+        impl nanoserde::DeJson for $enum_name {
+            fn de_json(state: &mut nanoserde::DeJsonState, input: &mut Chars) -> Result<Self, nanoserde::DeJsonErr> {
+                let val = state.u64_range(core::u64::MAX as u64)?;
+                state.next_tok(input)?;
+                let index = val as usize;
+
+                let variant = $enum_name::from_index_opt(index)
+                    .ok_or_else(|| nanoserde::DeJsonErr{
+                        msg: "Indicated index doesn't not correspond to any variant of this enum".to_string(),
+                        line: 0,
+                        col: 0,
+                    })?;
+                return Ok(variant);
+            }
+        }
 
         create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
     };
