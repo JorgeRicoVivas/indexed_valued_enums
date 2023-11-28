@@ -1,3 +1,4 @@
+///My macro
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
     (process features
@@ -5,11 +6,11 @@ macro_rules! create_indexed_valued_enum {
         [Delegators $($other_features:tt)*]
     )=>{
         impl $enum_name {
-            pub fn index(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::index(self) }
+            pub fn discriminant(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::discriminant(self) }
 
-            pub fn from_index_opt(index: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_index_opt(index) }
+            pub fn from_discriminant_opt(discriminant: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_discriminant_opt(discriminant) }
 
-            pub fn from_index(index: usize) -> Self { indexed_valued_enums::indexed_enum::Indexed::from_index(index) }
+            pub fn from_discriminant(discriminant: usize) -> Self { indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant) }
 
             pub fn value_opt(&self) -> Option<$value_type> { indexed_valued_enums::valued_enum::Valued::value_opt(self) }
 
@@ -26,7 +27,7 @@ macro_rules! create_indexed_valued_enum {
             type Target = $value_type;
 
             fn deref(&self) -> &Self::Target {
-                &<Self as indexed_valued_enums::valued_enum::Valued>::VALUES[self.index()]
+                &<Self as indexed_valued_enums::valued_enum::Valued>::VALUES[self.discriminant()]
             }
         }
 
@@ -38,8 +39,8 @@ macro_rules! create_indexed_valued_enum {
     )=>{
         impl core::clone::Clone for $enum_name {
             fn clone(&self) -> Self {
-                let index = indexed_valued_enums::indexed_enum::Indexed::index(self);
-                indexed_valued_enums::indexed_enum::Indexed::from_index(index)
+                let discriminant = indexed_valued_enums::indexed_enum::Indexed::discriminant(self);
+                indexed_valued_enums::indexed_enum::Indexed::from_index(discriminant)
             }
         }
 
@@ -51,7 +52,7 @@ macro_rules! create_indexed_valued_enum {
     )=>{
         impl serde::Serialize for $enum_name {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
-                serializer.serialize_u128(self.index() as u128)
+                serializer.serialize_u128(self.discriminant() as u128)
             }
         }
 
@@ -65,9 +66,9 @@ macro_rules! create_indexed_valued_enum {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
                 match deserializer.deserialize_u128(indexed_valued_enums::serde_compatibility::discriminant_visitor::DISCRIMINANT_VISITOR) {
                     Ok(value) => {
-                        match $enum_name::from_index_opt(value) {
+                        match $enum_name::from_discriminant_opt(value) {
                             Some(value) => { Ok(value) }
-                            None => { Err(serde::de::Error::custom("Deserialized an index that is bigger than the amount of variants")) }
+                            None => { Err(serde::de::Error::custom("Deserialized an discriminant that is bigger than the amount of variants")) }
                         }
                     }
                     Err(error) => { Err(error) }
@@ -83,7 +84,7 @@ macro_rules! create_indexed_valued_enum {
     )=>{
         impl nanoserde::SerBin for $enum_name {
             fn ser_bin(&self, output: &mut Vec<u8>) {
-                self.index().ser_bin(output)
+                self.discriminant().ser_bin(output)
             }
         }
 
@@ -96,7 +97,7 @@ macro_rules! create_indexed_valued_enum {
         impl nanoserde::DeBin for $enum_name {
             fn de_bin(offset: &mut usize, bytes: &[u8]) -> core::result::Result<Self, nanoserde::DeBinErr> {
                 core::result::Result::Ok(
-                    $enum_name::from_index_opt(nanoserde::DeBin::de_bin(offset, bytes)?)
+                    $enum_name::from_discriminant_opt(nanoserde::DeBin::de_bin(offset, bytes)?)
                         .ok_or_else(|| nanoserde::DeBinErr {
                             o: *offset,
                             l: core::mem::size_of::<usize>(),
@@ -114,7 +115,7 @@ macro_rules! create_indexed_valued_enum {
     )=>{
         impl nanoserde::SerJson for $enum_name {
             fn ser_json(&self, _d: usize, state: &mut nanoserde::SerJsonState) {
-                state.out.push_str(&self.index().to_string());
+                state.out.push_str(&self.discriminant().to_string());
             }
         }
 
@@ -128,11 +129,11 @@ macro_rules! create_indexed_valued_enum {
             fn de_json(state: &mut nanoserde::DeJsonState, input: &mut Chars) -> Result<Self, nanoserde::DeJsonErr> {
                 let val = state.u64_range(core::u64::MAX as u64)?;
                 state.next_tok(input)?;
-                let index = val as usize;
+                let discriminant = val as usize;
 
-                let variant = $enum_name::from_index_opt(index)
+                let variant = $enum_name::from_discriminant_opt(discriminant)
                     .ok_or_else(|| nanoserde::DeJsonErr{
-                        msg: "Indicated index doesn't not correspond to any variant of this enum".to_string(),
+                        msg: "Indicated discriminant doesn't not correspond to any variant of this enum".to_string(),
                         line: 0,
                         col: 0,
                     })?;
