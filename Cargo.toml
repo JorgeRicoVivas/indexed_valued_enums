@@ -1,6 +1,6 @@
 [package]
 name = "indexed_valued_enums"
-version = "0.8.1"
+version = "0.8.2"
 edition = "2021"
 authors = ["Jorge Rico Vivas <jorgericosoftware@gmail.com>"]
 license-file = "LICENSE.txt"
