@@ -10,7 +10,7 @@ pub struct USizediscriminantVisitor;
 impl Visitor<'_> for USizediscriminantVisitor {
     type Value = usize;
 
-    fn expecting(&self, formatter: &mut Formatter) -> std::fmt::Result {
+    fn expecting(&self, formatter: &mut Formatter) -> core::fmt::Result {
         formatter.write_str("Value was supossed to be in usize's range")
     }
 
