@@ -12,15 +12,17 @@ use crate::valued_enum::Valued;
 /// To implement it write:
 /// <br><br>
 /// create_indexed_valued_enum!{ <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	***Visibility*** enum ***EnumsName***, <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	derives: [***Derive1***, ***Derive2***, ...], <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	features: [***Feature1***, ***Feature2***, ...], <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	value type: ***TypeOfValue***, <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	#\[doc=**Documentation**] <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	#[derive(**Derive1**, **Derive2**, ...)] <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	#[features(**Feature1**, **Feature2**, ...)] <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	**Visibility** enum **Enum's name** values as **TypeOfValue**; <br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1***, ***Value1***,<br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant2***, ***Value2***,<br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	...<br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN***, ***ValueN***<br>
 /// }
+///
+/// As example:
 ///
 /// ```rust
 /// use indexed_valued_enums::create_indexed_valued_enum;
@@ -47,9 +49,10 @@ use crate::valued_enum::Valued;
 /// On each of the fields you can indicate different parameters to change the implementation of the
 /// enum:
 ///
-/// * *Visibility*: Visibility of the enum
+/// * *Documentation*: Documentation of the enum
+/// * *Derives*: List of derive macros you want the enum to execute (Optional)
+/// * *Visibility*: Visibility of the enum (Optional)
 /// * *EnumsName*: Name the enum will have
-/// * *Derives*: List of derive macros you want the enum to execute
 /// * *TypeOfValue*: type of the values the variant's resolve to
 /// * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
 ///                              the values must be const and have 'static lifetime

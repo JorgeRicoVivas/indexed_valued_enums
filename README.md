@@ -36,15 +36,17 @@
  To implement it write:
  <br><br>
  create_indexed_valued_enum!{ <br>
- &nbsp;&nbsp;&nbsp;&nbsp;	***Visibility*** enum ***EnumsName***, <br>
- &nbsp;&nbsp;&nbsp;&nbsp;	derives: [***Derive1***, ***Derive2***, ...], <br>
- &nbsp;&nbsp;&nbsp;&nbsp;	features: [***Feature1***, ***Feature2***, ...], <br>
- &nbsp;&nbsp;&nbsp;&nbsp;	value type: ***TypeOfValue***, <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;	#[doc=**Documentation**] <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;	#[derive(**Derive1**, **Derive2**, ...)] <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;	#[features(**Feature1**, **Feature2**, ...)] <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;	**Visibility** enum **Enum's name** values as **TypeOfValue**; <br>
  &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1***, ***Value1***,<br>
  &nbsp;&nbsp;&nbsp;&nbsp;	***Variant2***, ***Value2***,<br>
  &nbsp;&nbsp;&nbsp;&nbsp;	...<br>
  &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN***, ***ValueN***<br>
  }
+
+As example:
 
  ```rust
  use indexed_valued_enums::create_indexed_valued_enum;
