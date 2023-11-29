@@ -1,3 +1,6 @@
+#![no_std]
+#![no_main]
+
 //! A crate to easily create C-like enums resolving into values
 //!
 //! ## Example of valued enum use
@@ -122,3 +125,7 @@ pub mod macros;
 /// ```
 #[cfg(feature = "serde_enums")]
 pub mod serde_compatibility;
+
+//The following uses are taken for documentation purposes
+use crate::indexed_enum::Indexed;
+use crate::valued_enum::Valued;
