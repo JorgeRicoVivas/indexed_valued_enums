@@ -22,15 +22,21 @@ use crate::valued_enum::Valued;
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN***, ***ValueN***<br>
 /// }
 ///
-/// such as:
 /// ```rust
 /// use indexed_valued_enums::create_indexed_valued_enum;
 ///
 /// create_indexed_valued_enum! {
-///     #[doc="This is my other number enum"]
-///     #[derive(Eq, PartialEq, Debug)]
-///     #[features(ValueToVariantDelegators, Delegators, Clone, DerefToValue, Serialize, Deserialize, NanoDeBin, NanoSerBin, NanoDeJson, NanoSerJson)]
+///     #[doc="This is a custom enum that can get values of &'static str!"]
+///     //This enum derives certain traits, although you don't need to write this
+///     #[derive(Hash, Ord, PartialOrd, Eq, PartialEq, Debug)]
+///     //Gives a list of features that are decomposed functions for specific behaviours, you have
+///     //more details about them down below
+///     #[features(Clone, DerefToValue, Delegators, ValueToVariantDelegators,
+///                Serialize, Deserialize,
+///                NanoDeBin, NanoSerBin, NanoDeJson, NanoSerJson)]
+///     //Defines the enum and the value type it resolves to
 ///     pub enum MyOtherNumber valued as &'static str;
+///     //Defines every variant and their value, note that values must constant and have 'static lifetime
 ///     Zero, "Zero position",
 ///     First, "First position",
 ///     Second, "Second position",
@@ -45,7 +51,8 @@ use crate::valued_enum::Valued;
 /// * *EnumsName*: Name the enum will have
 /// * *Derives*: List of derive macros you want the enum to execute
 /// * *TypeOfValue*: type of the values the variant's resolve to
-/// * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to
+/// * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
+///                              the values must be const and have 'static lifetime
 /// * *Features*: List of specific implementations you want your enum to use, they are the following ones:
 ///     * DerefToValue: The enum implements Deref, making variants to resolve to their value
 ///                     directly, remember however these values won't mutate as they are constant
