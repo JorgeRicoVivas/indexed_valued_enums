@@ -27,10 +27,10 @@ use crate::valued_enum::Valued;
 /// use indexed_valued_enums::create_indexed_valued_enum;
 ///
 /// create_indexed_valued_enum! {
-///     enum Number,
-///     derives: [Eq, PartialEq, Debug],
-///     features: [],
-///     value type: &'static str,
+///     #[doc="This is my other number enum"]
+///     #[derive(Eq, PartialEq, Debug)]
+///     #[features(ValueToVariantDelegators, Delegators, Clone, DerefToValue, Serialize, Deserialize, NanoDeBin, NanoSerBin, NanoDeJson, NanoSerJson)]
+///     pub enum MyOtherNumber valued as &'static str;
 ///     Zero, "Zero position",
 ///     First, "First position",
 ///     Second, "Second position",
@@ -75,6 +75,37 @@ use crate::valued_enum::Valued;
 ///                  from it's enum's discriminant
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
+        (
+        $(#[doc = $doc:expr])?
+        $(#[derive($($derives:ident),*)])?
+        $(#[features($($features:tt),*)])?
+        $visibility:vis enum $enum_name:ident valued as $value_type:ty;
+        $($variants:ident, $values:expr),+ $(,)?
+    ) => {
+        $(#[derive($($derives),*)])?
+        $(#[doc = $doc])?
+        #[repr(usize)]
+        $visibility enum $enum_name{
+            $($variants),+
+        }
+
+        impl indexed_valued_enums::indexed_enum::Indexed for $enum_name {
+            #[doc = concat!("Array storing all the variants of the [",stringify!($enum_name),"]\
+            enum where each variant is stored in ordered by their discriminant")]
+            const VARIANTS: &'static [ Self ] = &[$($enum_name::$variants),+];
+        }
+
+        impl indexed_valued_enums::valued_enum::Valued for $enum_name {
+            type Value = $value_type;
+
+            #[doc = concat!("Array storing all the variants values of the \
+             [",stringify!($enum_name),"] enum, each value is stored in the same order as the \
+            discriminant of the variant they belong to")]
+            const VALUES: &'static [ Self::Value] = & [$($values),+];
+        }
+
+        $(create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($features)*] })?
+    };
     (process features
         [$enum_name:ident, $value_type:ty],
         [Delegators $($other_features:tt)*]
@@ -106,7 +137,7 @@ macro_rules! create_indexed_valued_enum {
             to this [", stringify!($enum_name),"] 's variant, this operation is O(1) as it just \
             gets the discriminant as a copy from \
             [indexed_valued_enums::valued_enum::Valued::VALUES] \
-            <br><br>This value is always [Option::Some], so it's recommended to call\
+            <br><br>This always returns [Option::Some], so it's recommended to call\
             [",stringify!($enum_name),"::value] instead")]
             pub fn value_opt(&self) -> Option<$value_type> {
                 indexed_valued_enums::valued_enum::Valued::value_opt(self)
@@ -171,7 +202,7 @@ macro_rules! create_indexed_valued_enum {
 
             #[doc = concat!("Clones this [",stringify!($enum_name),"]'s variant<br><br>This clone \
             is taken from the constant array of\
-            [indexed_valued_enums::indexed_enum::Indexed::INDEXES], meaning this is a copy of that \
+            [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this is a copy of that \
             array, and therefore not causing a long macro expansion")]
             fn clone(&self) -> Self {
                 let discriminant = indexed_valued_enums::indexed_enum::Indexed::discriminant(self);
@@ -290,37 +321,5 @@ macro_rules! create_indexed_valued_enum {
 
         create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
     };
-
     (process features [$enum_name:ident, $value_type:ty], [])=>{};
-
-    (
-        $visibility:vis enum $enum_name:ident,
-        derives: [$($derives:ident),*],
-        features: [$($features:tt),*],
-        value type: $value_type:ty,
-        $($variants:ident, $values:expr),+
-    ) => {
-        #[derive($($derives),*)]
-        #[repr(usize)]
-        $visibility enum $enum_name{
-            $($variants),+
-        }
-
-        impl indexed_valued_enums::indexed_enum::Indexed for $enum_name {
-            #[doc = concat!("Array storing all the variants of the [",stringify!($enum_name),"]\
-            enum where each variant is stored in ordered by their discriminant")]
-            const VARIANTS: &'static [ Self ] = &[$($enum_name::$variants),+];
-        }
-
-        impl indexed_valued_enums::valued_enum::Valued for $enum_name {
-            type Value = $value_type;
-
-            #[doc = concat!("Array storing all the variants values of the \
-             [",stringify!($enum_name),"] enum, each value is stored in the same order as the \
-            discriminant of the variant they belong to")]
-            const VALUES: &'static [ Self::Value] = & [$($values),+];
-        }
-
-        create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($features)*] }
-    };
 }

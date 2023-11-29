@@ -1,8 +1,10 @@
 use serde::de::{Error, Visitor};
 use std::fmt::Formatter;
 
+///Visitor to deserialize usize
 pub const DISCRIMINANT_VISITOR: USizediscriminantVisitor = USizediscriminantVisitor;
 
+///Empty struct of a visitor that deserialize to a single usize
 pub struct USizediscriminantVisitor;
 
 impl Visitor<'_> for USizediscriminantVisitor {

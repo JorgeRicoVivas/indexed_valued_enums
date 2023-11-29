@@ -8,10 +8,9 @@
 //! use indexed_valued_enums::valued_enum::Valued;
 //!
 //! create_indexed_valued_enum! {
-//!     enum Number,
-//!     derives: [Eq, PartialEq, Debug],
-//!     features: [Clone],
-//!     value type: NumberDescription,
+//!     #[derive(Eq, PartialEq, Debug)]
+//!     #[features(Clone)]
+//!     enum Number valued as NumberDescription;
 //!     Zero, NumberDescription { description: "Zero position", index: 0 },
 //!     First, NumberDescription { description: "First position", index: 1 },
 //!     Second, NumberDescription { description: "Second position", index: 2 },
@@ -34,7 +33,9 @@
 //! }
 //! ```
 //!
-//! For more details see the macro create_indexed_valued_enum
+//! For more details see the macro [crate::create_indexed_valued_enum] to see details and examples
+//! on how creating valued enums, it also offers simplified methods to implement serialize and
+//! deserialize for the Serde and Nanoserde crates
 
 
 /// Defines a trait to associate values to an enum
