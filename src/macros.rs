@@ -165,7 +165,7 @@ macro_rules! create_indexed_valued_enum {
     )=>{
         impl core::clone::Clone for $enum_name {
 
-            #[doc = concat!("Clones this [", stringify!($enum_name)"]'s variant<br><br>This clone \
+            #[doc = concat!("Clones this [",stringify!($enum_name),"]'s variant<br><br>This clone \
             is taken from the constant array of\
             [indexed_valued_enums::indexed_enum::Indexed::INDEXES], meaning this is a copy of that \
             array, and therefore not causing a long macro expansion")]
