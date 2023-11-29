@@ -88,7 +88,7 @@ macro_rules! create_indexed_valued_enum {
 
             #[doc = concat!("Gets the",stringify!($enum_name),"'s variant corresponding to said \
             discriminant, this operation is O(1) as it just gets the discriminant as a copy from \
-            [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum doesn't \
+            [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum does not \
             need to implement [Clone]")]
             pub fn from_discriminant_opt(discriminant: usize) -> Option<Self> {
                 indexed_valued_enums::indexed_enum::Indexed::from_discriminant_opt(discriminant)
@@ -96,22 +96,22 @@ macro_rules! create_indexed_valued_enum {
 
             #[doc = concat!("Gets the",stringify!($enum_name),"'s variant corresponding to said \
             discriminant, this operation is O(1) as it just gets the discriminant as a copy from \
-            [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum doesn't \
+            [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum does not \
             need to implement [Clone]")]
             pub fn from_discriminant(discriminant: usize) -> Self {
                 indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant)
             }
 
-            #[doc = concat!("Gives the value of type",stringify!($value_type),"corresponding to \
-            this", stringify!($enum_name),"'s variant<br><br>This value is always Some(",
-            stringify!($value_type),"), so it's recommended to call\
-             [",stringify!($enum_name),"::value] instead")]
+            #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding to \
+            this [", stringify!($enum_name),"] 's variant<br><br>This value is always \
+            [Option::Some(",stringify!($value_type),")] so it's recommended to call\
+            [",stringify!($enum_name),"::value] instead")]
             pub fn value_opt(&self) -> Option<$value_type> {
                 indexed_valued_enums::valued_enum::Valued::value_opt(self)
             }
 
-            #[doc = concat!("Gives the value of type",stringify!($value_type),"corresponding to \
-            this", stringify!($enum_name),"'s variant")]
+            #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding to \
+            this [", stringify!($enum_name),"] 's variant")]
             pub fn value(&self) -> $value_type {
                 indexed_valued_enums::valued_enum::Valued::value(self)
             }
@@ -124,10 +124,19 @@ macro_rules! create_indexed_valued_enum {
         [ValueToVariantDelegators $($other_features:tt)*]
     )=>{
         impl $enum_name {
-            #[doc = concat!()]
-            pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> { indexed_valued_enums::valued_enum::Valued::value_to_variant_opt(value) }
+            #[doc = concat!("Gives [",stringify!($enum_name),"]'s variant corresponding to this \
+            value <br><br> this is an O(n) operation as it does so by comparing every single value \
+            contained in [indexed_valued_enums::valued_enum::Valued::VALUES]")]
+            pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> {
+                indexed_valued_enums::valued_enum::Valued::value_to_variant_opt(value)
+            }
 
-            pub fn value_to_variant(value: &$value_type) -> Self { indexed_valued_enums::valued_enum::Valued::value_to_variant(value) }
+            #[doc = concat!("Gives [",stringify!($enum_name),"]'s variant corresponding to this \
+            value <br><br> this is an O(n) operation as it does so by comparing every single value \
+            contained in [indexed_valued_enums::valued_enum::Valued::VALUES]")]
+            pub fn value_to_variant(value: &$value_type) -> Self {
+                indexed_valued_enums::valued_enum::Valued::value_to_variant(value)
+            }
         }
 
         create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
@@ -139,7 +148,9 @@ macro_rules! create_indexed_valued_enum {
         impl core::ops::Deref for $enum_name{
             type Target = $value_type;
 
-            fn deref(&self) -> &Self::Target {
+            #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding to \
+            this [", stringify!($enum_name),"] 's variant")]
+            fn deref(&self) -> &'static Self::Target {
                 &<Self as indexed_valued_enums::valued_enum::Valued>::VALUES[self.discriminant()]
             }
         }
