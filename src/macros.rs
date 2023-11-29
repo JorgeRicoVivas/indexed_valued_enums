@@ -182,7 +182,7 @@ macro_rules! create_indexed_valued_enum {
         [Serialize $($other_features:tt)*]
     )=>{
         impl serde::Serialize for $enum_name {
-            #[doc = concat!("Serializes this [", stringify!($enum_name)"]'s variant as it's \
+            #[doc = concat!("Serializes this [",stringify!($enum_name),"]'s variant as it's \
             discriminant, reducing its serializing complexity")]
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: serde::Serializer {
                 serializer.serialize_u128(self.discriminant() as u128)
@@ -196,7 +196,7 @@ macro_rules! create_indexed_valued_enum {
         [Deserialize $($other_features:tt)*]
     )=>{
         impl<'de> serde::Deserialize<'de> for $enum_name {
-            #[doc = concat!("Deserializes this [", stringify!($enum_name)"]'s variant from it's \
+            #[doc = concat!("Deserializes this [",stringify!($enum_name),"]'s variant from it's \
             discriminant, reducing its deserializing complexity")]
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
                 match deserializer.deserialize_u128(indexed_valued_enums::serde_compatibility::discriminant_visitor::DISCRIMINANT_VISITOR) {
@@ -218,7 +218,7 @@ macro_rules! create_indexed_valued_enum {
         [NanoSerBin $($other_features:tt)*]
     )=>{
         impl nanoserde::SerBin for $enum_name {
-            #[doc = concat!("Serializes this [", stringify!($enum_name)"]'s variant as it's \
+            #[doc = concat!("Serializes this [",stringify!($enum_name),"]'s variant as it's \
             discriminant, reducing its serializing complexity")]
             fn ser_bin(&self, output: &mut Vec<u8>) {
                 self.discriminant().ser_bin(output)
@@ -232,7 +232,7 @@ macro_rules! create_indexed_valued_enum {
         [NanoDeBin $($other_features:tt)*]
     )=>{
         impl nanoserde::DeBin for $enum_name {
-            #[doc = concat!("Deserializes this [", stringify!($enum_name)"]'s variant from it's \
+            #[doc = concat!("Deserializes this [",stringify!($enum_name),"]'s variant from it's \
             discriminant, reducing its deserializing complexity")]
             fn de_bin(offset: &mut usize, bytes: &[u8]) -> core::result::Result<Self, nanoserde::DeBinErr> {
                 core::result::Result::Ok(
@@ -253,7 +253,7 @@ macro_rules! create_indexed_valued_enum {
         [NanoSerJson $($other_features:tt)*]
     )=>{
         impl nanoserde::SerJson for $enum_name {
-            #[doc = concat!("Serializes this [", stringify!($enum_name)"]'s variant as it's \
+            #[doc = concat!("Serializes this [",stringify!($enum_name),"]'s variant as it's \
             discriminant, reducing its serializing complexity")]
             fn ser_json(&self, _d: usize, state: &mut nanoserde::SerJsonState) {
                 state.out.push_str(&self.discriminant().to_string());
@@ -267,7 +267,7 @@ macro_rules! create_indexed_valued_enum {
         [NanoDeJson $($other_features:tt)*]
     )=>{
         impl nanoserde::DeJson for $enum_name {
-            #[doc = concat!("Deserializes this [", stringify!($enum_name)"]'s variant from it's \
+            #[doc = concat!("Deserializes this [",stringify!($enum_name),"]'s variant from it's \
             discriminant, reducing its deserializing complexity")]
             fn de_json(state: &mut nanoserde::DeJsonState, input: &mut core::str::Chars) -> Result<Self, nanoserde::DeJsonErr> {
                 let val = state.u64_range(core::u64::MAX as u64)?;
