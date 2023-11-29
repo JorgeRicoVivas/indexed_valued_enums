@@ -311,8 +311,8 @@ macro_rules! create_indexed_valued_enum {
         impl indexed_valued_enums::valued_enum::Valued for $enum_name {
             type Value = $value_type;
 
-            #[doc = concat!("Array storing all the variants values of the \
-            [",stringify!($enum_name),"]\ enum, each value is stored in the same order as the \
+            #[doc = concat!("Array storing all the variants values of the\
+             [",stringify!($enum_name),"] enum, each value is stored in the same order as the \
             discriminant of the variant they belong to")]
             const VALUES: &'static [ Self::Value] = & [$($values),+];
         }
