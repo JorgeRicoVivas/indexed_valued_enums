@@ -106,8 +106,7 @@ macro_rules! create_indexed_valued_enum {
             to this [", stringify!($enum_name),"] 's variant, this operation is O(1) as it just \
             gets the discriminant as a copy from \
             [indexed_valued_enums::valued_enum::Valued::VALUES] \
-            <br><br>This value is always \
-            [Option::Some(",stringify!($value_type),")] so it's recommended to call\
+            <br><br>This value is always [Option::Some], so it's recommended to call\
             [",stringify!($enum_name),"::value] instead")]
             pub fn value_opt(&self) -> Option<$value_type> {
                 indexed_valued_enums::valued_enum::Valued::value_opt(self)
