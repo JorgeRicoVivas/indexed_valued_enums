@@ -80,19 +80,41 @@ macro_rules! create_indexed_valued_enum {
         [Delegators $($other_features:tt)*]
     )=>{
         impl $enum_name {
-            #[doc = concat!("Gets the discriminant of this ", stringify!($enum_name),", this operation is O(1)")]
-            pub fn discriminant(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::discriminant(self) }
+            #[doc = concat!("Gets the discriminant of this",stringify!($enum_name),", this \
+            operation is O(1)")]
+            pub fn discriminant(&self) -> usize {
+                indexed_valued_enums::indexed_enum::Indexed::discriminant(self)
+            }
 
-            #[doc = concat!("Gets the ",stringify!($enum_name),"'s variant corresponding to said \
-            discriminant, this operation is O(1) as it just gets the discriminant as a copy from\
-             [Indexed::VARIANTS], meaning this enum doesn't need to implement [Clone]")]
-            pub fn from_discriminant_opt(discriminant: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_discriminant_opt(discriminant) }
+            #[doc = concat!("Gets the",stringify!($enum_name),"'s variant corresponding to said \
+            discriminant, this operation is O(1) as it just gets the discriminant as a copy from \
+            [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum doesn't \
+            need to implement [Clone]")]
+            pub fn from_discriminant_opt(discriminant: usize) -> Option<Self> {
+                indexed_valued_enums::indexed_enum::Indexed::from_discriminant_opt(discriminant)
+            }
 
-            pub fn from_discriminant(discriminant: usize) -> Self { indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant) }
+            #[doc = concat!("Gets the",stringify!($enum_name),"'s variant corresponding to said \
+            discriminant, this operation is O(1) as it just gets the discriminant as a copy from \
+            [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum doesn't \
+            need to implement [Clone]")]
+            pub fn from_discriminant(discriminant: usize) -> Self {
+                indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant)
+            }
 
-            pub fn value_opt(&self) -> Option<$value_type> { indexed_valued_enums::valued_enum::Valued::value_opt(self) }
+            #[doc = concat!("Gives the value of type",stringify!($value_type),"corresponding to \
+            this", stringify!($enum_name),"'s variant<br><br>This value is always Some(",
+            stringify!($value_type),"), so it's recommended to call\
+             [",stringify!($enum_name),"::value] instead")]
+            pub fn value_opt(&self) -> Option<$value_type> {
+                indexed_valued_enums::valued_enum::Valued::value_opt(self)
+            }
 
-            pub fn value(&self) -> $value_type { indexed_valued_enums::valued_enum::Valued::value(self) }
+            #[doc = concat!("Gives the value of type",stringify!($value_type),"corresponding to \
+            this", stringify!($enum_name),"'s variant")]
+            pub fn value(&self) -> $value_type {
+                indexed_valued_enums::valued_enum::Valued::value(self)
+            }
         }
 
         create_indexed_valued_enum !{process features [$enum_name, $value_type], [$($other_features)*]}
@@ -102,6 +124,7 @@ macro_rules! create_indexed_valued_enum {
         [ValueToVariantDelegators $($other_features:tt)*]
     )=>{
         impl $enum_name {
+            #[doc = concat!()]
             pub fn value_to_variant_opt(value: &$value_type) -> Option<Self> { indexed_valued_enums::valued_enum::Valued::value_to_variant_opt(value) }
 
             pub fn value_to_variant(value: &$value_type) -> Self { indexed_valued_enums::valued_enum::Valued::value_to_variant(value) }
