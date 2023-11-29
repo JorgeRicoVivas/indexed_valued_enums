@@ -303,17 +303,17 @@ macro_rules! create_indexed_valued_enum {
         }
 
         impl indexed_valued_enums::indexed_enum::Indexed for $enum_name {
-            #[doc = concat!("Array storing all the variants of the [",stringify!($enum_name),"]\
-            enum where each variant is stored in ordered by their discriminant")]
+            //#[doc = concat!("Array storing all the variants of the [",stringify!($enum_name),"]\
+            //enum where each variant is stored in ordered by their discriminant")]
             const VARIANTS: &'static [ Self ] = &[$($enum_name::$variants),+];
         }
 
         impl indexed_valued_enums::valued_enum::Valued for $enum_name {
             type Value = $value_type;
 
-            #[doc = concat!("Array storing all the variants values of the\
-             [",stringify!($enum_name),"] enum, each value is stored in the same order as the \
-            discriminant of the variant they belong to")]
+            //#[doc = concat!("Array storing all the variants values of the\
+            // [",stringify!($enum_name),"] enum, each value is stored in the same order as the \
+            //discriminant of the variant they belong to")]
             const VALUES: &'static [ Self::Value] = & [$($values),+];
         }
 
