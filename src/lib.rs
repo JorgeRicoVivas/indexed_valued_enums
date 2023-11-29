@@ -1,3 +1,5 @@
+#![no_std]
+#![no_main]
 
 //! A crate to easily create C-like enums resolving into values
 //!

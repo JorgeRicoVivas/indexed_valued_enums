@@ -1,5 +1,4 @@
 use serde::de::{Error, Visitor};
-use core::fmt::Formatter;
 
 ///Visitor to deserialize usize
 pub const DISCRIMINANT_VISITOR: USizediscriminantVisitor = USizediscriminantVisitor;
@@ -10,7 +9,7 @@ pub struct USizediscriminantVisitor;
 impl Visitor<'_> for USizediscriminantVisitor {
     type Value = usize;
 
-    fn expecting(&self, formatter: &mut Formatter) -> core::fmt::Result {
+    fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
         formatter.write_str("Value was supossed to be in usize's range")
     }
 
