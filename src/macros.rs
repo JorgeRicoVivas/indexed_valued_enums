@@ -1,4 +1,78 @@
-///My macro
+use crate::indexed_enum::Indexed;
+use crate::valued_enum::Valued;
+
+/// Produces an enum implementing the [Indexed] and [Valued] traits, meaning the enum's variants can
+/// produce unique numbers of usize to identify each variant through [Indexed::discriminant], and
+/// get back those variants through [Indexed::from_discriminant], and similar to it, each variant
+/// has a value that can be taken from [Valued::value], where the variant can be taken back* from
+/// that  value through [Valued::value_to_variant]
+///
+/// *Just if the value isn't repeated
+/// <br><br>
+/// To implement it write:
+/// <br><br>
+/// create_indexed_valued_enum!{ <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***Visibility*** enum ***EnumsName***, <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	derives: [***Derive1***, ***Derive2***, ...], <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	features: [***Feature1***, ***Feature2***, ...], <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	value type: ***TypeOfValue***, <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1***, ***Value1***,<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant2***, ***Value2***,<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	...<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN***, ***ValueN***<br>
+/// }
+///
+/// such as:
+/// ```rust
+/// use indexed_valued_enums::create_indexed_valued_enum;
+///
+/// create_indexed_valued_enum! {
+///     enum Number,
+///     derives: [Eq, PartialEq, Debug],
+///     features: [],
+///     value type: &'static str,
+///     Zero, "Zero position",
+///     First, "First position",
+///     Second, "Second position",
+///     Third,  "Third position"
+/// }
+/// ```
+///
+/// On each of the fields you can indicate different parameters to change the implementation of the
+/// enum:
+///
+/// * *Visibility*: Visibility of the enum
+/// * *EnumsName*: Name the enum will have
+/// * *Derives*: List of derive macros you want the enum to execute
+/// * *TypeOfValue*: type of the values the variant's resolve to
+/// * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to
+/// * *Features*: List of specific implementations you want your enum to use, they are the following ones:
+///     * DerefToValue: The enum implements Deref, making variants to resolve to their value
+///                     directly, remember however these values won't mutate as they are constant
+///                     references (&'static *TypeOfValue*), this is also the reason why these
+///                     values require their life-time to be 'static
+///     * Clone: The enum implements clone calling [Indexed::from_discriminant], this way it's not
+///              required for the Derive Clone macro to expand to large enums
+///     * Delegators: Implements delegator functions over this enum that call on the methods from
+///                  [Indexed] and [Valued], this way it is not required to import or use the
+///                  indexed_valued_enums crate directly, however, it doesn't delegate the methods
+///                  [Valued::value_to_variant] and [Valued::value_to_variant_opt] as they
+///                  require the type of value to implement [PartialEq], however, you can delegate
+///                  these too with the feature **ValueToVariantDelegators**
+///     * ValueToVariantDelegators: Implements delegator functions for [Valued::value_to_variant]
+///                                 and [Valued::value_to_variant_opt]
+///     * Serialize: Implements serde's Serialize trait where it serializes to an usize that
+///                  represents this enum's discriminant
+///     * Deserialize: Implements serde's Deserialize trait where it deserializes an enum variant's
+///                    from it's enum's discriminant
+///     * NanoSerBin: Implements nanoserde's SerBin trait where it serializes to an usize that
+///                   represents this enum's discriminant
+///     * NanoDeBin: Implements nanoserde's DeBin trait where it deserializes an enum variant's
+///                  from it's enum's discriminant
+///     * NanoSerJson: Implements nanoserde's SerJson trait where it serializes to an usize that
+///                   represents this enum's discriminant
+///     * NanoDeJson: Implements nanoserde's DeJson trait where it deserializes an enum variant's
+///                  from it's enum's discriminant
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
     (process features
@@ -6,8 +80,12 @@ macro_rules! create_indexed_valued_enum {
         [Delegators $($other_features:tt)*]
     )=>{
         impl $enum_name {
+            #[doc = concat!("Gets the discriminant of this ", stringify!($enum_name),", this operation is O(1)")]
             pub fn discriminant(&self) -> usize { indexed_valued_enums::indexed_enum::Indexed::discriminant(self) }
 
+            #[doc = concat!("Gets the ",stringify!($enum_name),"'s variant corresponding to said \
+            discriminant, this operation is O(1) as it just gets the discriminant as a copy from\
+             [Indexed::VARIANTS], meaning this enum doesn't need to implement [Clone]")]
             pub fn from_discriminant_opt(discriminant: usize) -> Option<Self> { indexed_valued_enums::indexed_enum::Indexed::from_discriminant_opt(discriminant) }
 
             pub fn from_discriminant(discriminant: usize) -> Self { indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant) }

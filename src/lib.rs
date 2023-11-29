@@ -37,8 +37,20 @@
 //! For more details see the macro create_indexed_valued_enum
 
 
+/// Defines a trait to associate values to an enum
 pub mod valued_enum;
+
+/// Defines a trait index enums over an array using it's discriminant
 pub mod indexed_enum;
+
+/// Defines the main macro used to expand a list of values to an enum where each variant has an
+/// associated values
 pub mod macros;
+
+/// Adds compatibility with Serde, this requires indicating the feature 'serde_enums' when adding
+/// this library to your Cargo.toml, like
+/// ```toml
+/// indexed_valued_enums = { version = "0.8.0", features=["serde_enums"] }
+/// ```
 #[cfg(feature = "serde_enums")]
 pub mod serde_compatibility;
