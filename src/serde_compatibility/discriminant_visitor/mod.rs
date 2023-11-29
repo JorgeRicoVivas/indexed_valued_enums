@@ -1,5 +1,5 @@
 use serde::de::{Error, Visitor};
-use std::fmt::Formatter;
+use core::fmt::Formatter;
 
 ///Visitor to deserialize usize
 pub const DISCRIMINANT_VISITOR: USizediscriminantVisitor = USizediscriminantVisitor;
