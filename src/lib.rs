@@ -105,7 +105,6 @@
 //!     * NanoDeJson: Implements nanoserde's DeJson trait where it deserializes an enum variant's
 //!                  from it's enum's discriminant
 
-
 /// Defines a trait to associate values to an enum
 pub mod valued_enum;
 
