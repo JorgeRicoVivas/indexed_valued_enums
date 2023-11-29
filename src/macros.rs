@@ -250,7 +250,7 @@ macro_rules! create_indexed_valued_enum {
         [NanoDeJson $($other_features:tt)*]
     )=>{
         impl nanoserde::DeJson for $enum_name {
-            fn de_json(state: &mut nanoserde::DeJsonState, input: &mut Chars) -> Result<Self, nanoserde::DeJsonErr> {
+            fn de_json(state: &mut nanoserde::DeJsonState, input: &mut core::str::iter::Chars) -> Result<Self, nanoserde::DeJsonErr> {
                 let val = state.u64_range(core::u64::MAX as u64)?;
                 state.next_tok(input)?;
                 let discriminant = val as usize;
