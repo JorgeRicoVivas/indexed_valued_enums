@@ -111,8 +111,8 @@ macro_rules! create_indexed_valued_enum {
         $visibility:vis enum $enum_name:ident valued as $value_type:ty;
         $($(#[$variants_metadata:meta])* $variants:ident, $values:expr),+ $(,)?
     ) => {
-        $(#[$metadata])*
         #[repr(usize)]
+        $(#[$metadata])*
         $visibility enum $enum_name{
             $($(#[$variants_metadata:meta])* $variants),+,
         }
