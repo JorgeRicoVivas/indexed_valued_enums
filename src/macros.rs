@@ -91,12 +91,12 @@ macro_rules! create_indexed_valued_enum {
         $(#[$metadata:meta])*
         $(#[features($($features:tt),*)])?
         $visibility:vis enum $enum_name:ident valued as $value_type:ty;
-        $($($variants_metadata:meta)? $variants:ident, $values:expr),+ $(,)?
+        $($(#[$variants_metadata:meta])* $variants:ident, $values:expr),+ $(,)?
     ) => {
         $(#[$metadata])*
         #[repr(usize)]
         $visibility enum $enum_name{
-            $($($variants_metadata)? $variants),+,
+            $($(#[$variants_metadata:meta])* $variants),+,
         }
 
         impl indexed_valued_enums::indexed_enum::Indexed for $enum_name {
