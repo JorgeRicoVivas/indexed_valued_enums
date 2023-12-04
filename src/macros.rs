@@ -12,17 +12,34 @@ use crate::valued_enum::Valued;
 /// To implement it write:
 /// <br><br>
 /// create_indexed_valued_enum!{ <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	#\[doc=**Documentation**] <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	#[derive(**Derive1**, **Derive2**, ...)] <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	#[features(**Feature1**, **Feature2**, ...)] <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	**Visibility** enum **Enum's name** values as **TypeOfValue**; <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1***, ***Value1***,<br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant2***, ***Value2***,<br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	...<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	**Your metadata** //Like '#[derive(...)]', this is optional <br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	#[features(**Feature1**, **Feature2**, ...)] // this is optional<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	**Visibility** enum **Enum's name** values as **TypeOfValue**; <br><br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1's metadata*** //this is optional<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1***, ***Value1***,<br><br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant2's metadata*** //this is optional<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant2***, ***Value2***,<br><br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	...<br><br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN's metadata*** //this is optional<br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN***, ***ValueN***<br>
 /// }
 ///
-/// As example:
+/// A simple example would look like:
+///
+/// ```rust
+/// use indexed_valued_enums::create_indexed_valued_enum;
+///
+/// create_indexed_valued_enum! {
+///     //Defines the enum and the value type it resolves to
+///     pub enum MyOtherNumber valued as &'static str;
+///     //Defines every variant and their value, note that values must constant and have 'static lifetime
+///     Zero, "Zero position",
+///     First, "First position",
+///     Second, "Second position",
+///     Third,  "Third position"
+/// }
+/// ```
+/// A more complex example would look like:
 ///
 /// ```rust
 /// use indexed_valued_enums::create_indexed_valued_enum;
@@ -49,9 +66,6 @@ use crate::valued_enum::Valued;
 /// On each of the fields you can indicate different parameters to change the implementation of the
 /// enum:
 ///
-/// * *Documentation*: Documentation of the enum.
-/// * *Derives*: List of derive macros you want the enum to execute (Optional).
-/// * *Visibility*: Visibility of the enum (Optional).
 /// * *EnumsName*: Name the enum will have.
 /// * *TypeOfValue*: type of the values the variant's resolve to.
 /// * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
@@ -85,6 +99,9 @@ use crate::valued_enum::Valued;
 ///                   represents this enum's discriminant.
 ///     * NanoDeJson: Implements nanoserde's DeJson trait where it deserializes an enum variant's
 ///                  from it's enum's discriminant.
+///
+/// Note: You can write metadata (Such as #[derive(...)]) before each pair of *Variant, Value*, and
+/// also before the enum, but it is required that the #[features(...)] is the last of the metadatas
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
     (
