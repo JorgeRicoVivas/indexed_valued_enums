@@ -87,18 +87,16 @@ use crate::valued_enum::Valued;
 ///                  from it's enum's discriminant.
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
-        (
-        $(#[doc = $doc:expr])?
-        $(#[derive($($derives:ident),*)])?
+    (
+        $($metadata:meta)?
         $(#[features($($features:tt),*)])?
         $visibility:vis enum $enum_name:ident valued as $value_type:ty;
-        $($variants:ident, $values:expr),+ $(,)?
+        $($($variants_metadata:meta)? $variants:ident, $values:expr),+ $(,)?
     ) => {
-        $(#[derive($($derives),*)])?
-        $(#[doc = $doc])?
+        $($metadata)?
         #[repr(usize)]
         $visibility enum $enum_name{
-            $($variants),+
+            $($($variants_metadata)? $variants),+,
         }
 
         impl indexed_valued_enums::indexed_enum::Indexed for $enum_name {
