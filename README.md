@@ -75,7 +75,7 @@ create_indexed_valued_enum! {
     #[derive(Hash, Ord, PartialOrd, Eq, PartialEq, Debug)]
     //Gives a list of features that are decomposed functions for specific behaviours, you have
     //more details about them down below
-    #[features(Clone, DerefToValue, Delegators, ValueToVariantDelegators,
+    ##[features(Clone, DerefToValue, Delegators, ValueToVariantDelegators,
                Serialize, Deserialize,
                NanoDeBin, NanoSerBin, NanoDeJson, NanoSerJson)]
     //Defines the enum and the value type it resolves to
@@ -126,4 +126,5 @@ enum:
                  from it's enum's discriminant.
 
 Note: You can write metadata (Such as #[derive(...)]) before each pair of *Variant, Value*, and
-also before the enum, but it is required that the #[features(...)] is the last of the metadatas
+also before the enum, but it is required that the ##[features(...)] is the last of the
+metadatas as this is not another metadata (henche the double hashtag to denote it)
