@@ -106,7 +106,7 @@ use crate::valued_enum::Valued;
 macro_rules! create_indexed_valued_enum {
     (
         $(#[$metadata:meta])*
-        $(#[features($($features:tt),*)])?
+        $([features($($features:tt),*)])?
         $visibility:vis enum $enum_name:ident valued as $value_type:ty;
         $($(#[$variants_metadata:meta])* $variants:ident, $values:expr),+ $(,)?
     ) => {
