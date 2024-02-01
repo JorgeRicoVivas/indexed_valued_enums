@@ -264,7 +264,7 @@ macro_rules! create_indexed_valued_enum {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: serde::Deserializer<'de> {
                 match deserializer.deserialize_u128(indexed_valued_enums::serde_compatibility::discriminant_visitor::DISCRIMINANT_VISITOR) {
                     Ok(value) => {
-                        match $enum_name::from_discriminant_opt(value).ok_or_else(|| serde::de::Error::custom(
+                        $enum_name::from_discriminant_opt(value).ok_or_else(|| serde::de::Error::custom(
                             "Deserialized an discriminant that is bigger than the amount of variants",
                         ))
                     }
