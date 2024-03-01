@@ -1,0 +1,12 @@
+[package]
+name = "indexed_valued_enums_derive"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = { version = "1.0.78", features = ["proc-macro" ] }
+quote = { version ="1.0.35", features = ["proc-macro"] }
+syn = { version = "1.0.109", features = ["clone-impls", "derive", "parsing", "printing", "proc-macro", "extra-traits", "full"] }

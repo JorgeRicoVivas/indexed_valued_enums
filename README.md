@@ -1,4 +1,4 @@
-A crate to easily create C-like enums resolving into values.
+A crate to easily create C-like enums resolving into values, inspired by Java.
 
 ## Example of valued enum use
 This creates a public enum where every Number has an associated value of type NumberDescription.
@@ -57,7 +57,7 @@ use indexed_valued_enums::create_indexed_valued_enum;
 create_indexed_valued_enum! {
     //Defines the enum and the value type it resolves to
     pub enum MyOtherNumber valued as &'static str;
-    //Defines every variant and their value, note that values must constant and have 'static lifetime
+    //Defines every variant and their value, note that values must be const
     Zero, "Zero position",
     First, "First position",
     Second, "Second position",
@@ -80,7 +80,7 @@ create_indexed_valued_enum! {
                NanoDeBin, NanoSerBin, NanoDeJson, NanoSerJson)]
     //Defines the enum and the value type it resolves to
     pub enum MyOtherNumber valued as &'static str;
-    //Defines every variant and their value, note that values must constant and have 'static lifetime
+    //Defines every variant and their value, note that values must be const
     Zero, "Zero position",
     First, "First position",
     Second, "Second position",
@@ -94,12 +94,12 @@ enum:
 * *EnumsName*: Name the enum will have.
 * *TypeOfValue*: type of the values the variant's resolve to.
 * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
-                             the values must be const and have 'static lifetime.
+                             the values must be const.
 * *Features*: List of specific implementations you want your enum to use, they are the following ones:
     * DerefToValue: The enum implements Deref, making variants to resolve to their value
                     directly, remember however these values won't mutate as they are constant
                     references (&'static *TypeOfValue*), this is also the reason why these
-                    values require their life-time to be 'static.
+                    values must be const.
     * Clone: The enum implements clone calling [Indexed::from_discriminant], this way it's not
              required for the Derive Clone macro to expand to large enums.
     * Delegators: Implements delegator functions over this enum that call on the methods from

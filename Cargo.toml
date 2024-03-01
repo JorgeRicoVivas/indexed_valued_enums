@@ -1,19 +1,7 @@
-[package]
-name = "indexed_valued_enums"
-version = "0.9.3"
-edition = "2021"
-authors = ["Jorge Rico Vivas <jorgericosoftware@gmail.com>"]
-license-file = "LICENSE.txt"
-description = "Crate to easily create C-like enums resolving into values"
-repository = "https://github.com/JorgeRicoVivas/indexed_valued_enums"
-keywords = ["valued", "enum"]
-categories = ["no-std", "no-std::no-alloc"]
+[workspace]
+members = [
+    "indexed_valued_enums", "indexed_valued_enums_derive",
+]
 
-[lib]
-crate-type = ["lib"]
-
-[dependencies]
-serde = { version = "1.0.193", optional=true }
-
-[features]
-serde_enums=["dep:serde"]
+[patch.crates-io]
+indexed_valued_enums = { path = "indexed_valued_enums" }
