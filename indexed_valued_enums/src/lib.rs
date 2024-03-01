@@ -156,3 +156,6 @@ use crate::valued_enum::Valued;
 
 #[cfg(feature = "derive")]
 extern crate indexed_valued_enums_derive;
+
+#[cfg(feature = "derive")]
+pub use indexed_valued_enums_derive::{*};
