@@ -4,7 +4,7 @@ version = "0.9.3"
 edition = "2021"
 authors = ["Jorge Rico Vivas <jorgericosoftware@gmail.com>"]
 license-file = "../LICENSE.txt"
-description = "Crate to easily create C-like enums resolving into values"
+description = "Create enums resolving into values, and get their variants back through their values or their discriminant, inspired by Java."
 repository = "https://github.com/JorgeRicoVivas/indexed_valued_enums"
 keywords = ["valued", "enum"]
 categories = ["no-std", "no-std::no-alloc"]
@@ -14,13 +14,17 @@ readme = "../README.md"
 crate-type = ["lib"]
 
 [dependencies]
-serde = { version = "1.0.193", optional=true }
-indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive", optional=true }
+serde = { version = "1.0.197", optional = true }
+indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive", optional = true }
+
 
 [features]
-serde_enums=["dep:serde"]
-derive=["dep:indexed_valued_enums_derive"]
+serde_enums = ["dep:serde"]
+derive = ["dep:indexed_valued_enums_derive"]
 
 [dev-dependencies]
-serde = { version = "1.0.193" }
 indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive" }
+serde = { version = "1.0.197" }
+const-default = { version = "1.0.0" }
+nanoserde = { version = "0.1.37" }
+

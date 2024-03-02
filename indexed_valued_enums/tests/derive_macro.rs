@@ -83,3 +83,77 @@ fn test_custom_type() {
     assert_eq!(NumberCustom::Third.num, NumberCustom::value_to_variant(&MyType { num: 3, name: "Third" }).num);
     assert!(NumberCustom::value_to_variant_opt(&MyType { num: 4, name: "Fourth" }).is_none());
 }
+
+#[test]
+fn test_custom_constr() {
+    assert!(NumberValueConstr::value_to_variant_opt(&4).is_none());
+}
+
+#[derive(Clone, Debug, PartialEq, Valued)]
+#[enum_valued_features(Delegators, ValueToVariantDelegators, DerefToValue)]
+#[enum_valued_as(u8)]
+enum NumberValueConstr {
+    #[value(0)]
+    #[variant_initialize_uses(2, 3)]
+    Zero(u16, u16),
+    #[value(1)]
+    First(u8, u16),
+    #[value(2)]
+    Second { a: u8, b: u16 },
+    #[value(3)]
+    #[variant_initialize_uses(c: 5, d: 7)]
+    Third { c: u8, d: u16 },
+}
+
+#[derive(Hash, Ord, PartialOrd, Eq, PartialEq, Debug)]
+#[derive(Valued)]
+#[indexed_valued_enums_derive::enum_valued_as(& 'static str)]
+#[enum_valued_features(Clone, DerefToValue, Delegators, ValueToVariantDelegators)]
+#[unvalued_default("My default string")]
+pub enum NumberComplex {
+    /// Zero doesn't have a value, so it's value will resolve to "My default string"
+    Zero,
+    #[value("First position")]
+    First,
+    /// Second is a variant with fields: u8 and u16, since it's not specified, when calling
+    /// [Indexed::from_discriminant] the values for both will be 0, which are their default
+    /// values on [const_default::ConstDefault::DEFAULT]
+    #[value("Second position")]
+    Second(u8, u16),
+    /// Third is a variant with fields: my_age: u8 and my_name:&'static str, as specified,
+    /// calling [Indexed::from_discriminant] will result in those fields contanining
+    /// my_age: 23, my_name: "Jorge"
+    #[variant_initialize_uses(my_age: 23, my_name: "Jorge")]
+    #[value("Third position")]
+    Third { my_age: u8, my_name: &'static str },
+}
+
+#[derive(PartialEq)]
+pub struct Planet {
+    radius: f32,
+    gravity: f32,
+}
+
+#[derive(PartialEq, Debug, Valued)]
+#[enum_valued_as(Planet)]
+#[enum_valued_features(DerefToValue, Delegators, ValueToVariantDelegators)]
+enum Planets {
+    #[value(Planet{ radius: 6357.0, gravity: 9.807 })]
+    Earth,
+    #[value(Planet{ radius: 3389.5, gravity: 3.71 })]
+    Mars,
+    #[value(Planet{ radius: 2439.7, gravity: 3.7 })]
+    Mercury,
+}
+
+#[test]
+fn example_test(){
+    //Identifiers mechanics
+    assert_eq!(Planets::Mars, Planets::from_discriminant(1));
+    assert_eq!(Planets::Mercury.discriminant(), 2);
+
+    //Value mechanics
+    assert_eq!(Planets::Earth.value().radius, 6357.0);
+    assert_eq!(Planets::Mars.gravity, 3.71);
+    assert_eq!(Planets::Mercury, Planets::value_to_variant(&Planet{ radius: 2439.7, gravity: 3.7 }));
+}

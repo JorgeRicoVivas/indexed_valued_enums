@@ -1,7 +1,7 @@
-use crate::indexed_enum::{Indexed, split_usize_to_isizes};
+use crate::indexed_enum::{discriminant_internal, from_discriminant_opt_internal, Indexed, split_usize_to_isizes};
 
-/// Allows to get a value from an enum's variant, where this enum implements [Indexed], having the
-/// following enum and implementing [Valued] for it:
+/// Allows to get a value from an enum's variant, where this enum implements [Indexed], for example,
+/// having the following implementation:
 ///
 /// ```rust
 /// use indexed_valued_enums::{indexed_enum::Indexed, valued_enum::Valued};
@@ -25,7 +25,8 @@ use crate::indexed_enum::{Indexed, split_usize_to_isizes};
 /// [100->First, 200->Second, 300->Third]
 ///
 /// Note this documentation it's solely informational, it is dis-recommended to implement this trait
-/// manually, but using the [crate::create_indexed_valued_enum] instead
+/// manually, but using the derive macro [crate::Valued] or the declarative macro
+/// [crate::create_indexed_valued_enum] instead.
 pub trait Valued: Indexed {
 
     /// Type of the values the enumeration resolves to
@@ -47,10 +48,7 @@ pub trait Valued: Indexed {
     /// Note that if implemented correctly (ensured by using [crate::create_indexed_valued_enum]),
     /// calling this method will always produce [Option::Some(Value)]
     fn value_opt(&self) -> Option<Self::Value> {
-        let discriminant = self.discriminant();
-        if discriminant>=Self::VARIANTS.len(){return None}
-        let (first_offset, second_offset) = split_usize_to_isizes(discriminant);
-        Some(unsafe { Self::VALUES.as_ptr().offset(first_offset).offset(second_offset).read() })
+        value_opt_internal(self)
     }
 
     /// Gives the value corresponding to this variant, this is an O(1) operation as it just gets the
@@ -75,3 +73,37 @@ pub trait Valued: Indexed {
         Self::value_to_variant_opt(value).unwrap()
     }
 }
+
+/// Gives the value corresponding for a variant of an enum marked with #[repr(usize)], this is an
+/// O(1) operation as it just gets the value as a copy from [Valued::VALUES]
+///
+/// The type of [Valued::Value] doesn't need to implement the [Clone] trait as the array is
+/// treated as a raw pointer whose value is read without cloning through
+/// [core::ptr::read]
+///
+/// Note that if implemented correctly (ensured by the declarative macro
+/// [crate::create_indexed_valued_enum]), calling this method will always produce
+/// [Option::Some(Value)]
+pub const fn value_opt_internal<ValuedType: Valued>(variant: &ValuedType) -> Option<ValuedType::Value> {
+    let discriminant = discriminant_internal(variant);
+    if discriminant >= ValuedType::VARIANTS.len() { return None; }
+    let (first_offset, second_offset, third_offset) = split_usize_to_isizes(discriminant);
+    Some(unsafe { ValuedType::VALUES.as_ptr().offset(first_offset).offset(second_offset).offset(third_offset).read() })
+}
+
+/// Gives the value corresponding for a variant of an enum marked with #[repr(usize)], this is an
+/// O(1) operation as it just gets the value as a copy from [Valued::VALUES]
+///
+/// The type of [Valued::Value] doesn't need to implement the [Clone] trait as the array is
+/// treated as a raw pointer whose value is read without cloning through
+/// [core::ptr::read]
+///
+/// Note that if implemented correctly (ensured by the declarative macro
+/// [crate::create_indexed_valued_enum]), this method should never panic.
+pub const fn value_internal<ValuedType: Valued>(variant: &ValuedType) -> ValuedType::Value {
+    let discriminant = discriminant_internal(variant);
+    if discriminant >= ValuedType::VARIANTS.len() { panic!("Tried to get a variant's value whose index is larger than the amount of Variants") }
+    let (first_offset, second_offset, third_offset) = split_usize_to_isizes(discriminant);
+    unsafe { ValuedType::VALUES.as_ptr().offset(first_offset).offset(second_offset).offset(third_offset).read() }
+}
+

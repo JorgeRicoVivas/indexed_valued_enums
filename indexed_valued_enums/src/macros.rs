@@ -10,11 +10,11 @@ use crate::valued_enum::Valued;
 ///
 /// *Just if the value isn't repeated.
 /// <br><br>
-/// To implement it write:
-/// <br><br>
+/// Being a macro by rules, you only need to follow this pattern:
+///
 /// create_indexed_valued_enum!{ <br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	**Your metadata** //Like '#[derive(...)]', this is optional <br>
-/// &nbsp;&nbsp;&nbsp;&nbsp;	#[features(**Feature1**, **Feature2**, ...)] // this is optional<br>
+/// &nbsp;&nbsp;&nbsp;&nbsp;	**##**[features(**Feature1**, **Feature2**, ...)] // this is optional, but it needs **two** octothorpes<br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	**Visibility** enum **Enum's name** values as **TypeOfValue**; <br><br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1's metadata*** //this is optional<br>
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***Variant1***, ***Value1***,<br><br>
@@ -25,6 +25,22 @@ use crate::valued_enum::Valued;
 /// &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN***, ***ValueN***<br>
 /// }
 ///
+/// <br>
+///
+/// On each of these fields you can indicate different parameters to change the implementation of the
+/// enum:
+///
+/// * *EnumsName*: Name the enum will have.
+/// * *TypeOfValue*: type of the values the variant's resolve to.
+/// * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
+///   the values must be const and have 'static lifetime.
+/// * *Features*: List of specific implementations you want your enum to use, see the section
+/// * *Features*: List of specific implementations you want your enum to use, you can find a list of
+///               them in the documentation of [crate] -> Section: Extra features.
+///
+/// Note: You can write metadata (Such as #[derive(...)]) before each pair of *Variant, Value*, and
+/// also before the enum, but it is required that the ##[features(...)] is the last of the
+/// metadatas as this is not another metadata (hence the double hashtag to denote it)///
 /// A simple example would look like:
 ///
 /// ```rust
@@ -42,7 +58,7 @@ use crate::valued_enum::Valued;
 /// ```
 /// A more complex example would look like:
 ///
-/// ```rust ignore
+/// ```rust
 /// use indexed_valued_enums::create_indexed_valued_enum;
 ///
 /// create_indexed_valued_enum! {
@@ -51,9 +67,7 @@ use crate::valued_enum::Valued;
 ///     #[derive(Hash, Ord, PartialOrd, Eq, PartialEq, Debug)]
 ///     //Gives a list of features that are decomposed functions for specific behaviours, you have
 ///     //more details about them down below
-///     ###[features(Clone, DerefToValue, Delegators, ValueToVariantDelegators,
-///                Serialize, Deserialize,
-///                NanoDeBin, NanoSerBin, NanoDeJson, NanoSerJson)]
+///     ###[features(Clone, DerefToValue, Delegators, ValueToVariantDelegators)]
 ///     //Defines the enum and the value type it resolves to
 ///     pub enum MyOtherNumber valued as &'static str;
 ///     //Defines every variant and their value, note that values must be const
@@ -63,54 +77,16 @@ use crate::valued_enum::Valued;
 ///     Third,  "Third position"
 /// }
 /// ```
-///
-/// On each of the fields you can indicate different parameters to change the implementation of the
-/// enum:
-///
-/// * *EnumsName*: Name the enum will have.
-/// * *TypeOfValue*: type of the values the variant's resolve to.
-/// * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
-///                              the values must be const and have 'static lifetime.
-/// * *Features*: List of specific implementations you want your enum to use, they are the following ones:
-///     * DerefToValue: The enum implements Deref, making variants to resolve to their value
-///                     directly, remember however these values won't mutate as they are constant
-///                     references (&'static *TypeOfValue*), this is also the reason why these
-///                     values must be const.
-///     * Clone: The enum implements clone calling [Indexed::from_discriminant], this way it's not
-///              required for the Derive Clone macro to expand to large enums.
-///     * Delegators: Implements delegator functions over this enum that call on the methods from
-///                  [Indexed] and [Valued], this way it is not required to import or use the
-///                  indexed_valued_enums crate directly, however, it doesn't delegate the methods
-///                  [Valued::value_to_variant] and [Valued::value_to_variant_opt] as they
-///                  require the type of value to implement [PartialEq], however, you can delegate
-///                  these too with the feature **ValueToVariantDelegators**.
-///     * ValueToVariantDelegators: Implements delegator functions for [Valued::value_to_variant]
-///                                 and [Valued::value_to_variant_opt].
-///     * Serialize: Implements serde's Serialize trait where it serializes to an usize that
-///                  represents this enum's discriminant. <br>
-///                  Requires the "serde_enums" feature.
-///     * Deserialize: Implements serde's Deserialize trait where it deserializes an enum variant's
-///                    from it's enum's discriminant. <br>
-///                    Requires the "serde_enums" feature.
-///     * NanoSerBin: Implements nanoserde's SerBin trait where it serializes to an usize that
-///                   represents this enum's discriminant.
-///     * NanoDeBin: Implements nanoserde's DeBin trait where it deserializes an enum variant's
-///                  from it's enum's discriminant.
-///     * NanoSerJson: Implements nanoserde's SerJson trait where it serializes to an usize that
-///                   represents this enum's discriminant.
-///     * NanoDeJson: Implements nanoserde's DeJson trait where it deserializes an enum variant's
-///                  from it's enum's discriminant.
-///
-/// Note: You can write metadata (Such as #[derive(...)]) before each pair of *Variant, Value*, and
-/// also before the enum, but it is required that the ##[features(...)] is the last of the
-/// metadatas as this is not another metadata (henche the double hashtag to denote it)
 #[macro_export]
 macro_rules! create_indexed_valued_enum {
     (
         $(#[$metadata:meta])*
         $(##[features($($features:tt),*)])?
         $visibility:vis enum $enum_name:ident valued as $value_type:ty;
-        $($(#[$variants_metadata:meta])* $variants:ident, $values:expr),+ $(,)?
+        $($(#[$variants_metadata:meta])* $variants:ident, $values:expr
+            $(;unnamed_field_initializers $($unnamed_field_initializers:expr),+)?
+            $(;named_field_initializers $($named_field_name:ident $named_field_value:expr),+)?
+        ),+ $(,)?
     ) => {
         $(#[$metadata])*
         #[repr(usize)]
@@ -122,11 +98,20 @@ macro_rules! create_indexed_valued_enum {
 
         $(indexed_valued_enums::create_indexed_valued_enum !{process features $enum_name, $value_type; $($features);* })?
     };
-    (impl traits $enum_name:ident $value_type:ty; $($variants:ident, $values:expr),+)=>{
+    (
+        impl traits $enum_name:ident $value_type:ty; $($variants:ident, $values:expr
+            $(;unnamed_field_initializers $($unnamed_field_initializers:expr),+ ;)?
+            $(;named_field_initializers $($named_field_name:ident $(:)? $named_field_value:expr),+ ;)?
+        ),+
+    )=>{
         impl indexed_valued_enums::indexed_enum::Indexed for $enum_name {
             #[doc = concat!("Array storing all the variants of the [",stringify!($enum_name),"]\
             enum where each variant is stored in ordered by their discriminant")]
-            const VARIANTS: &'static [ Self ] = &[$($enum_name::$variants),+];
+            const VARIANTS: &'static [ Self ] = &[$($enum_name::$variants
+            $(( $($unnamed_field_initializers), +))?
+            $({ $($named_field_name: $named_field_value), +})?
+
+            ),+];
         }
 
         impl indexed_valued_enums::valued_enum::Valued for $enum_name {
@@ -146,24 +131,24 @@ macro_rules! create_indexed_valued_enum {
         impl $enum_name {
             #[doc = concat!("Gets the discriminant of this",stringify!($enum_name),", this \
             operation is O(1)")]
-            pub fn discriminant(&self) -> usize {
-                indexed_valued_enums::indexed_enum::Indexed::discriminant(self)
+            pub const fn discriminant(&self) -> usize {
+                indexed_valued_enums::indexed_enum::discriminant_internal(self)
             }
 
             #[doc = concat!("Gets the",stringify!($enum_name),"'s variant corresponding to said \
             discriminant, this operation is O(1) as it just gets the discriminant as a copy from \
             [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum does not \
             need to implement [Clone]")]
-            pub fn from_discriminant_opt(discriminant: usize) -> Option<Self> {
-                indexed_valued_enums::indexed_enum::Indexed::from_discriminant_opt(discriminant)
+            pub const fn from_discriminant_opt(discriminant: usize) -> Option<Self> {
+                indexed_valued_enums::indexed_enum::from_discriminant_opt_internal(discriminant)
             }
 
             #[doc = concat!("Gets the",stringify!($enum_name),"'s variant corresponding to said \
             discriminant, this operation is O(1) as it just gets the discriminant as a copy from \
             [indexed_valued_enums::indexed_enum::Indexed::VARIANTS], meaning this enum does not \
             need to implement [Clone]")]
-            pub fn from_discriminant(discriminant: usize) -> Self {
-                indexed_valued_enums::indexed_enum::Indexed::from_discriminant(discriminant)
+            pub const fn from_discriminant(discriminant: usize) -> Self {
+                indexed_valued_enums::indexed_enum::from_discriminant_internal(discriminant)
             }
 
             #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding \
@@ -172,16 +157,16 @@ macro_rules! create_indexed_valued_enum {
             [indexed_valued_enums::valued_enum::Valued::VALUES] \
             <br><br>This always returns [Option::Some], so it's recommended to call\
             [",stringify!($enum_name),"::value] instead")]
-            pub fn value_opt(&self) -> Option<$value_type> {
-                indexed_valued_enums::valued_enum::Valued::value_opt(self)
+            pub const fn value_opt(&self) -> Option<$value_type> {
+                indexed_valued_enums::valued_enum::value_opt_internal(self)
             }
 
             #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding \
             to this [", stringify!($enum_name),"] 's variant, this operation is O(1) as it just \
             gets the discriminant as a copy from \
             [indexed_valued_enums::valued_enum::Valued::VALUES]")]
-            pub fn value(&self) -> $value_type {
-                indexed_valued_enums::valued_enum::Valued::value(self)
+            pub const fn value(&self) -> $value_type {
+                indexed_valued_enums::valued_enum::value_internal(self)
             }
         }
     };
