@@ -1,12 +1,16 @@
 #![cfg_attr(not(test), no_std)]
 #![cfg_attr(not(test), no_main)]
 
+//! ![crates.io](https://img.shields.io/crates/v/indexed_valued_enums.svg)
+//! ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JorgeRicoVivas/indexed_valued_enums/rust.yml)
+//! ![docs.rs](https://img.shields.io/docsrs/indexed_valued_enums)
+//! ![GitHub License](https://img.shields.io/github/license/JorgeRicoVivas/indexed_valued_enums)
 //!
 //! Create enums resolving into values, and get their variants back through their values or their
 //! discriminant, inspired by Java's enums.
 //! 
 //! 1 [Motivation and use](#1-motivation-and-use)<br>
-//! 2 [Creating a valued enum](#2-example-of-valued-enum-use-via-the-declarative-macro)<br>
+//! 2 [Creating a valued enum](#2a1-introductory-example-of-valued-enum-use-via-the-declarative-macro)<br>
 //! &nbsp;&nbsp;&nbsp;&nbsp;2.a Via the declarative macro<br>
 //! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.1 [Introductory example of valued enum use via the declarative macro](#2a1-introductory-example-of-valued-enum-use-via-the-declarative-macro)<br>
 //! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.a.2 [How to use the declarative macro](#2a2-how-to-use-the-declarative-macro)<br>
@@ -172,7 +176,7 @@
 //! * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
 //!   the values must be const and have 'static lifetime.
 //! * *Features*: List of specific implementations you want your enum to use, see the section
-//!   [extra features](#extra-features) for more information about this.
+//!   [extra features](#3-extra-features) for more information about this.
 //! 
 //! Note: You can write metadata (Such as #[derive(...)]) before each pair of *Variant, Value*, and
 //! also before the enum, but it is required that the ##[features(...)] is the last of the enum's 
@@ -243,7 +247,7 @@
 //!     description: &'static str,
 //!     index: u16,
 //! }
-//! 
+//!
 //! #[test]
 //! fn test() {
 //!     assert_eq!(Number::Zero.discriminant(), 0);
@@ -280,7 +284,7 @@
 //! **Add extra functionality**: Below the Derive declaration you can write the attribute
 //! #[enum_valued_features(*Your desired features*)] which will automatically implement certain
 //! traits or functions which will become helpful, you can check these features on the section
-//! [extra features](#extra-features).<br>
+//! [extra features](#3-extra-features).<br>
 //! 
 //! ```rust ignore
 //! ...
@@ -358,7 +362,7 @@
 //! }
 //! ```
 //! 
-//! A more complex example would look like:
+//! A more complex example could look like:
 //! 
 //! ```rust
 //! use indexed_valued_enums::{Valued, enum_valued_as};
@@ -422,17 +426,18 @@
 //! ## 4 Assumptions this crate does
 //! 
 //! * You won't rename this crates name or any of those used in the
-//! [extra features](#extra-features), this is because when expanding macros, it will try to target
-//! **your** dependencies, by doing this, you avoid longer compile times when this crate and yours
-//! use different versions.
+//! [extra features](#3-extra-features), this is because when expanding macros, it will try to
+//! target **your** dependencies, by doing this, you avoid longer compile times when this crate and
+//! yours use different versions, the dependencies you might need would be: ```serde```,
+//! ```nanoserde```, and ```const-default```.<br><br>
 //! * The variants of your enum don't have their discriminant manually set-up, this is because
 //! values to these variants are stored in an array, where each value is stored in the index
 //! corresponding to their variant's position and therefore discriminant, meaning the discriminant
-//! as an index.
+//! as an index.<br><br>
 //! * The enums are attributed with #[repr(usize)], you don't need to do this manually, the
 //! declarative macro does it by itself, and when using the attribute
 //! '#[enum_valued_as(*Your type*)]' it silently adds #[repr(usize)], but if you were to use cargo
-//! expand and use the original code, the #[repr(usize)] attribute must remain.
+//! expand and use the original code, the #[repr(usize)] attribute must remain.<br><br>
 
 
 /// Defines a trait to associate values to an enum

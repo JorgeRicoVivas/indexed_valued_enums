@@ -1,6 +1,6 @@
 [package]
 name = "indexed_valued_enums"
-version = "0.9.3"
+version = "1.0.0"
 edition = "2021"
 authors = ["Jorge Rico Vivas <jorgericosoftware@gmail.com>"]
 license-file = "../LICENSE.txt"
@@ -17,7 +17,6 @@ crate-type = ["lib"]
 serde = { version = "1.0.197", optional = true }
 indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive", optional = true }
 
-
 [features]
 serde_enums = ["dep:serde"]
 derive = ["dep:indexed_valued_enums_derive"]
@@ -25,6 +24,5 @@ derive = ["dep:indexed_valued_enums_derive"]
 [dev-dependencies]
 indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive" }
 serde = { version = "1.0.197" }
-const-default = { version = "1.0.0" }
 nanoserde = { version = "0.1.37" }
-
+const-default = { version = "1.0.0" }

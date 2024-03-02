@@ -1,7 +1,6 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use std::mem;
 use proc_macro2::{Ident, Punct};
 use quote::{quote, ToTokens};
 use syn::{Attribute, DataEnum, DeriveInput, parse_macro_input, Type};
@@ -12,6 +11,157 @@ use syn::spanned::Spanned;
 const INCORRECT_VALUED_AS_FORMAT_ERROR_MESSAGE: &'static str = "Wrong syntax of attribute '#[valued_as(*type*)]', it must have one and just one type as content, like:\n\n\
                   #[derive(Valued)]\n#[enum_valued_as(*your type*)]\nenum your_enums_name {{\n\t...\n}} ";
 
+/// Implements the 'Indexed' and 'Valued' traits for an enum, allowing to get a discriminant / index
+/// and a value for each variant through the functions 'discriminant' and 'value', and get this
+/// variant back using the functions 'from_discriminant_opt' and 'value_to_variant_opt'. <br><br>
+///
+/// **Note**: This requires the 'derive' feature on your Cargo.toml, like
+/// ```indexed_valued_enums = { version =  "1.0.0", features=["derive", ...] }```.<br><br>
+///
+/// Attributes:
+///
+/// | Attribute | Target | Contents description |
+/// |---|---|---|
+/// | #[enum_valued_as(type)] | Enum | Type of your variant’s values. <br><br> This is silently an Attribute macro that adds ‘#[repr(usize)]’ to your enum, rather than a simple attribute, it’s used is also reserved if in the future new features should be born that require to modify your enum silently, if so, changes will appear both here and in the [enum_valued_as] documentation.  |
+/// | #[unvalued_default<br>(default value)] | Enum | Default value for variants whose value isn’t specified. |
+/// | #[enum_valued_features<br>(extra features)] | Enum | List of extra features, you can find a detailed list of every extra feature in this crate’s index. |
+/// | #[value(This variant’s value)] | Variant | Value this variant will resolve to when calling the ‘value’ function. |
+/// | #[variant_initialize_uses<br>(Field default values)] | Variant with fields | Specifies the contents of the field of said. |
+///
+/// <br>
+///
+/// ## Step-by-step detailed explanation
+///
+/// **Basic implementation**: Add the derive [indexed_valued_enums::Valued] macro and then write the
+/// #[enum_valued_as(*Value type*)] attribute indicating the type your variants will resolve to,
+/// then on each variant write an attribute #[value(*this variants value*)]. this way: <br><br>
+///
+/// ```rust ignore
+/// use indexed_valued_enums::{Valued, enum_valued_as};
+///
+/// #[derive(Valued)]
+/// #[enum_valued_as(u8)]
+/// pub enum MyEnum{
+///     #[value(10)]
+///     Variant1,
+///     #[value(20)]
+///     Variant2,
+/// }
+/// ```
+/// <br>
+///
+/// **Add extra functionality**: Below the Derive declaration you can write the attribute
+/// #[enum_valued_features(*Your desired features*)] which will automatically implement certain
+/// traits or functions which will become helpful, you can check these features on the section
+/// [extra features](#extra-features).<br>
+///
+/// ```rust ignore
+/// ...
+/// /// Adding 'Delegators' allows to call most of functions at
+/// /// compile-time, being able to get values and variants easily
+/// #[enum_valued_features(DerefToValue, Delegators)]
+/// pub enum MyEnum{
+///     ...
+/// }
+/// ```
+/// <br>
+///
+/// **Don't repeat yourself**: For variants whose variants values are often repeated or irrelevant
+/// you can use the attribute #[unvalued_default(*Your default value*)] which will make all these
+/// unvalued variants to resolve into said value.<br>
+///
+/// ```rust ignore
+/// ...
+/// #[unvalued_default(50)]
+/// pub enum MyEnum{
+///     /// This variant's value will resolve to 10 as it is specified.
+///     #[value(10)]
+///     Variant1,
+///     /// This variant's value will resolve to the default of 50 as a value it is not specified.
+///     Variant2,
+/// }
+/// ```
+/// <br>
+///
+/// **Variant's with fields can be added too!** Unlike the declarative macro, this one is compatible
+/// with variants with fields, be them named or unnamed, but they have a downside: since the 
+/// [Indexed::from_discriminant] function must return a constant value for each variants, we also 
+/// need to create those variants with values at compile, when this situation arises you have two 
+/// options:
+///
+/// * Use the #[variant_initialize_uses(*Your default value*)]: Here you write the default contents
+/// for these variants, for example, if one was ```IP{host: &'static str, port: u16}```, you could
+/// write: #[variant_initialize_uses(host: "localhost", port: 8080)]<br><br>
+/// * If the values on of the variant implement [const_default::ConstDefault]: You can simply add
+/// const-default in your Cargo.toml like ```const-default = { version =  "1.0.0" }``` and when this
+/// variant gets resolved from [Indexed::from_discriminant], it will return it with all fields as
+/// specified in [const_default::ConstDefault].
+///
+/// ```rust ignore
+/// ...
+/// pub enum MyEnum{
+///     /// When applying [from::discriminant] to 0, it will return MyEnum::Variant1(23, "Jorge")
+///     #[variant_initialize_uses(23, "Jorge")]
+///     Variant1(u8, &'static str),
+///     /// Since the attribute #[variant_initialize_uses] isn't specified, when applying
+///     /// [from::discriminant] to 1, it will return MyEnum::Variant2{age: 0}, as ConstDefault
+///     /// for u8 returns 0 
+///     Variant2{age:u8},
+/// }
+/// ```
+/// <br>
+///
+/// ## Examples
+///
+/// A simple example using this macro could look like this:
+///
+/// ```rust ignore
+/// use indexed_valued_enums::{Valued, enum_valued_as};
+///
+/// #[derive(Valued)]
+/// #[enum_valued_as(&'static str)]
+/// pub enum Number{
+///     #[value("Zero position")]
+///     Zero,
+///     #[value("First position")]
+///     First,
+///     #[value("Second position")]
+///     Second,
+///     #[value("Third position")]
+///     Third,
+/// }
+/// ```
+/// <br>
+/// A more complex example could look like:
+///
+/// ```rust ignore
+/// use indexed_valued_enums::{Valued, enum_valued_as};
+///
+/// #[derive(Hash, Ord, PartialOrd, Eq, PartialEq, Debug)]
+/// #[derive(Valued)]
+/// #[enum_valued_as(&'static str)]
+/// #[enum_valued_features(Clone, DerefToValue, Delegators, ValueToVariantDelegators)]
+/// #[unvalued_default("My default string")]
+/// pub enum Number{
+///     /// Zero doesn't have a value, so it's value will resolve to "My default string"
+///     Zero,
+///     #[value("First position")]
+///     First,
+///     /// Second is a variant with fields: u8 and u16, since it's not specified, when calling
+///     /// [Indexed::from_discriminant] the values for both will be 0, which are their default
+///     /// values on [const_default::ConstDefault::DEFAULT]
+///     #[value("Second position")]
+///     Second(u8, u16),
+///     /// Third is a variant with fields: my_age: u8 and my_name:&'static str, as specified,
+///     /// calling [Indexed::from_discriminant] will result in those fields contanining
+///     /// my_age: 23, my_name: "Jorge"
+///     #[variant_initialize_uses(my_age: 23, my_name: "Jorge")]
+///     #[value("Third position")]
+///     Third{my_age: u8, my_name:&'static str},
+/// }
+///
+///
+/// ```
 #[proc_macro_derive(Valued, attributes(enum_valued_features, unvalued_default, variant_initialize_uses, value))]
 pub fn derive_macro_describe(input: TokenStream) -> TokenStream {
     /*    let cloned_input = input.clone();
@@ -148,6 +298,12 @@ impl Parse for Features {
     }
 }
 
+/// Attribute macro used by the 'Valued' derive macro to indicate the type of your variant's values,
+/// it poses as a simple derive macro, but it is used to modify your enum and prepare it for the
+/// Indexed and Valued traits, currently, this only means adding '#[repr(usize)]' to your enum, and
+/// while it is unprobable, this macro is still reserved for manipulating your enum if new features
+/// were to need it, for this reason, this attribute should appear right after #[derive(Valued)] and
+/// before any other attributes.
 #[proc_macro_attribute]
 pub fn enum_valued_as(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let item = proc_macro2::TokenStream::from(item);
