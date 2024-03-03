@@ -2,6 +2,13 @@
 name = "indexed_valued_enums_derive"
 version = "1.0.0"
 edition = "2021"
+authors = ["Jorge Rico Vivas <jorgericosoftware@gmail.com>"]
+description = "Derive macro for the indexed_valued_enums crate."
+repository = "https://github.com/JorgeRicoVivas/indexed_valued_enums"
+keywords = ["valued", "enum", "discriminant", "index", "derive"]
+categories = ["no-std", "no-std::no-alloc"]
+license-file = "../LICENSE.txt"
+readme = "../README.md"
 
 [lib]
 proc-macro = true
