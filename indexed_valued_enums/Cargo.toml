@@ -7,7 +7,7 @@ license-file = "../LICENSE.txt"
 description = "Create enums resolving into values, and get their variants back through their values or their discriminant, inspired by Java."
 repository = "https://github.com/JorgeRicoVivas/indexed_valued_enums"
 keywords = ["valued", "enum"]
-categories = ["no-std", "no-std::no-alloc"]
+categories = ["no-std", "no-std::no-alloc", "rust-patterns"]
 readme = "../README.md"
 
 [lib]
@@ -18,7 +18,9 @@ serde = { version = "1.0.197", optional = true }
 indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive", optional = true }
 
 [features]
+# Allows the macros extra features 'Serialize' and 'Deserialize' with serde.
 serde_enums = ["dep:serde"]
+# Allows the use of the #[derive(Valued)] macro.
 derive = ["dep:indexed_valued_enums_derive"]
 
 [dev-dependencies]
