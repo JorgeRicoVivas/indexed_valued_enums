@@ -15,7 +15,7 @@ crate-type = ["lib"]
 
 [dependencies]
 serde = { version = "1.0.197", optional = true }
-indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive", optional = true }
+indexed_valued_enums_derive = { version = "1.0.0", path = "../indexed_valued_enums_derive", optional = true }
 
 [features]
 # Allows the macros extra features 'Serialize' and 'Deserialize' with serde.
@@ -24,7 +24,7 @@ serde_enums = ["dep:serde"]
 derive = ["dep:indexed_valued_enums_derive"]
 
 [dev-dependencies]
-indexed_valued_enums_derive = { path = "../indexed_valued_enums_derive" }
+indexed_valued_enums_derive = { version = "1.0.0", path = "../indexed_valued_enums_derive" }
 serde = { version = "1.0.197" }
 nanoserde = { version = "0.1.37" }
 const-default = { version = "1.0.0" }
