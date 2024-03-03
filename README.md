@@ -3,7 +3,7 @@
 [![docs.rs](https://img.shields.io/docsrs/indexed_valued_enums)](https://docs.rs/indexed_valued_enums/latest/indexed_valued_enums/)
 [![GitHub License](https://img.shields.io/github/license/JorgeRicoVivas/indexed_valued_enums)](https://github.com/JorgeRicoVivas/indexed_valued_enums?tab=CC0-1.0-1-ov-file)
 
-Create enums resolving into values, and get their variants back through their values or their
+Create enums resolving into values and get their variants back through their values or their
 discriminant, inspired by Java's enums.
 
 1 [Motivation and use](#1-motivation-and-use)<br>
@@ -50,7 +50,7 @@ public enum Planet {
 To replicate those mechanics two trais have been created:
 
 * [Indexed] allows you to get a discriminant / index of said variant through the
-function 'discriminant', and get this variant back using the function 'from_discriminant'.
+function 'discriminant' and get this variant back using the function 'from_discriminant'.
 <br><br>
 In the example below, Planet::Mars gives discriminant 1, and the
 discriminant 1 would give Planet::Mars Back.<br><br><br>
@@ -314,14 +314,14 @@ pub enum MyEnum{
 
 **Variant's with fields can be added too!** Unlike the declarative macro, this one is compatible
 with variants with fields, be them named or unnamed, but they have a downside: since the
-[Indexed::from_discriminant] function must return a constant value for each variants, we also
+[Indexed::from_discriminant] function must return a constant value for each variant, we also
 need to create those variants with values at compile, when this situation arises you have two
 options:
 
-* Use the #[variant_initialize_uses(*Your default value*)]: Here you write the default contents
-for these variants, for example, if one was ```IP{host: &'static str, port: u16}```, you could
-write: #[variant_initialize_uses(host: "localhost", port: 8080)]<br><br>
-* If the values on of the variant implement [const_default::ConstDefault]: You can simply add
+* Use the #[variant_initialize_uses(*Your default value*)] attribute: Here you write the default
+contents for these variants, for example, if one was ```IP{host: &'static str, port: u16}```,
+you could write: #[variant_initialize_uses(host: "localhost", port: 8080)].<br><br>
+* If the values of the variant implement [const_default::ConstDefault]: You can simply add
 const-default in your Cargo.toml like ```const-default = { version =  "1.0.0" }``` and when this
 variant gets resolved from [Indexed::from_discriminant], it will return it with all fields as
 specified in [const_default::ConstDefault].
@@ -423,7 +423,7 @@ have control over which version of Serde and NanoSerde is being applied.
 
 ## 4 Assumptions this crate does
 
-* You won't rename this crates name or any of those used in the
+* You won't rename this crate's name or any of those used in the
 [extra features](#3-extra-features), this is because when expanding macros, it will try to
 target **your** dependencies, by doing this, you avoid longer compile times when this crate and
 yours use different versions, the dependencies you might need would be: ```serde```,
