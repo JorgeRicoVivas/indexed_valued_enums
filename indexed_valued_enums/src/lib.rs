@@ -52,14 +52,14 @@
 //! <br>
 //! To replicate those mechanics two trais have been created:
 //!
-//! * [indexed_valued_enums::indexed_enum::Indexed] Allows you to get a discriminant / index of said
-//! variant through the function [discriminant], and get this variant back using the function
-//! [from_discriminant].<br>
+//! * [Indexed] allows you to get a discriminant / index of said variant through the
+//! function 'discriminant', and get this variant back using the function 'from_discriminant'.
+//! <br><br>
 //! In the example below, Planet::Mars gives discriminant 1, and the
-//! discriminant 1 would give Planet::Mars Back.<br><br>
-//! * [indexed_valued_enums::valued_enum::Valued] Allows you to associate values to discriminants,
-//! giving a function [value] to return the associated constant with the variant, and
-//! [value_to_variant_opt] to get a possible variant whose constant matches said value.<br>
+//! discriminant 1 would give Planet::Mars Back.<br><br><br>
+//! * [Valued] allows you to associate values to discriminants, giving a function
+//! 'value' to return the associated constant with the variant, and 'value_to_variant_opt' to get a
+//! possible variant whose constant matches said value.<br><br>
 //! In the example below, Planet::Earth gives a value of CelestialBody{ radius: 6357.0,
 //! gravity: 9.807 }, and said value would return Planet::Earth back.<br>
 //!
@@ -263,9 +263,10 @@
 //! **IMPORTANT**: To use it, the 'derive' feature should be indicated on your Cargo.toml, like
 //! ```indexed_valued_enums = { version =  "1.0.0", features=["derive", ...] }```.
 //!
-//! **Basic implementation**: Add the derive [indexed_valued_enums::Valued] macro and then write the
-//! #[enum_valued_as(*Value type*)] attribute indicating the type your variants will resolve to,
-//! then on each variant write an attribute #[value(*this variants value*)]. this way: <br><br>
+//! **Basic implementation**: Add the derive macro [indexed_valued_enums_derive::Valued] and then
+//! write the #[enum_valued_as(*Value type*)] attribute indicating the type your variants will
+//! resolve to, then on each variant write an attribute #[value(*this variants value*)]. this way:
+//! <br><br>
 //!
 //! ```rust
 //! use indexed_valued_enums::{Valued, enum_valued_as};
@@ -395,15 +396,15 @@
 //!
 //! * **DerefToValue**: Implements Deref, dereferencing each variant to a static reference of their
 //! value.<br><br>
-//! * **Clone**: Implements clone calling [from_discriminant], avoiding large expansions of the
+//! * **Clone**: Implements clone calling 'from_discriminant', avoiding large expansions of the
 //! Derive Clone, this however won't clone the fields of your variants if there are some, being
-//! rather ideal in the case of large field-less enums.<br>Since it calls [discriminant] and then
-//! [from_discriminant], this operation is O(1). <br><br>
+//! rather ideal in the case of large field-less enums.<br>Since it calls 'discriminant' and then
+//! 'from_discriminant', this operation is O(1). <br><br>
 //! * **Delegators**: Implements **const functions** equivalent to methods from [Indexed] and
-//! [Valued], like [value(&self)] or [from_discriminant(&self)], note that these delegator functions
+//! [Valued], like 'value(&self)' or 'from_discriminant(&self)', note that these delegator functions
 //! are not the same as the ones inside the [Indexed] and [Valued] traits, as these delegators
 //! **are const** functions.<br>
-//! Note it doesn't delegate the methods [value_to_variant] and [value_to_variant_opt] as they
+//! Note it doesn't delegate the methods 'value_to_variant' and 'value_to_variant_opt' as they
 //! require the type of value to implement [PartialEq], you can delegate these too with the feature
 //! **ValueToVariantDelegators**, but these delegator functions are **not const**.<br><br>
 //! * **ValueToVariantDelegators**: Implements delegator functions calling to
