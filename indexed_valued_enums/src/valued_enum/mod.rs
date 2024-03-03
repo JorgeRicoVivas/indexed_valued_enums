@@ -1,4 +1,4 @@
-use crate::indexed_enum::{discriminant_internal, from_discriminant_opt_internal, Indexed, split_usize_to_isizes};
+use crate::indexed_enum::{discriminant_internal, Indexed, split_usize_to_isizes};
 
 /// Allows to get a value from an enum's variant, where this enum implements [Indexed], for example,
 /// having the following implementation:
@@ -28,7 +28,6 @@ use crate::indexed_enum::{discriminant_internal, from_discriminant_opt_internal,
 /// manually, but using the derive macro [crate::Valued] or the declarative macro
 /// [crate::create_indexed_valued_enum] instead.
 pub trait Valued: Indexed {
-
     /// Type of the values the enumeration resolves to
     type Value;
 
@@ -59,7 +58,7 @@ pub trait Valued: Indexed {
 
     /// Gives variant corresponding to a value, this is an O(n) operation as it does so by comparing
     /// every single value contained in [Valued::VALUES]
-    fn value_to_variant_opt(value: &Self::Value) -> Option<Self> where Self::Value:PartialEq {
+    fn value_to_variant_opt(value: &Self::Value) -> Option<Self> where Self::Value: PartialEq {
         let discriminant = Self::VALUES.iter()
             .enumerate()
             .filter(|(_, variant_value)| value.eq(variant_value)).next()
@@ -69,7 +68,7 @@ pub trait Valued: Indexed {
 
     /// Gives variant corresponding to a value, this is an O(n) operation as it does so by comparing
     /// every single value contained in [Valued::VALUES]
-    fn value_to_variant(value: &Self::Value) -> Self where Self::Value:PartialEq {
+    fn value_to_variant(value: &Self::Value) -> Self where Self::Value: PartialEq {
         Self::value_to_variant_opt(value).unwrap()
     }
 }

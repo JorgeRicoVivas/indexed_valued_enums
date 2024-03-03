@@ -8,7 +8,7 @@
 //!
 //! Create enums resolving into values, and get their variants back through their values or their
 //! discriminant, inspired by Java's enums.
-//! 
+//!
 //! 1 [Motivation and use](#1-motivation-and-use)<br>
 //! 2 [Creating a valued enum](#2a1-introductory-example-of-valued-enum-use-via-the-declarative-macro)<br>
 //! &nbsp;&nbsp;&nbsp;&nbsp;2.a Via the declarative macro<br>
@@ -21,29 +21,29 @@
 //! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.b.3 [Other examples for the derive macro](#2b3-other-examples-for-the-derive-macro)<br>
 //! 3 [Extra features](#3-extra-features)<br>
 //! 4 [Assumptions this crate does](#4-assumptions-this-crate-does)<br>
-//! 
+//!
 //! ## 1 Motivation and use
 //! In a few programming languages it is possible to create enums and associate some information
 //! at compile time, for example, Java or C# allow to get a variants identifier, and said variant
 //! out of that identifier, it also allows applying a constructor to them, making easy to associate
 //! constant values to each variant, allowing to define enums like this one:
-//! 
+//!
 //! ```java
 //! public enum Planet {
 //!     Earth(6357.0, 9.807), Mars(3389.5, 3.71), Mercury(2439.7, 3.7);
-//! 
+//!
 //!     private Double radius;
 //!     private Double gravity;
-//! 
+//!
 //!     Planet(Double radius, Double gravity) {
 //!         this.radius = radius;
 //!         this.gravity = gravity;
 //!     }
-//! 
+//!
 //!     public Double getRadius() {
 //!         return radius;
 //!     }
-//! 
+//!
 //!     public Double getGravity() {
 //!         return gravity;
 //!     }
@@ -51,7 +51,7 @@
 //! ```
 //! <br>
 //! To replicate those mechanics two trais have been created:
-//! 
+//!
 //! * [indexed_valued_enums::indexed_enum::Indexed] Allows you to get a discriminant / index of said
 //! variant through the function [discriminant], and get this variant back using the function
 //! [from_discriminant].<br>
@@ -62,8 +62,8 @@
 //! [value_to_variant_opt] to get a possible variant whose constant matches said value.<br>
 //! In the example below, Planet::Earth gives a value of CelestialBody{ radius: 6357.0,
 //! gravity: 9.807 }, and said value would return Planet::Earth back.<br>
-//! 
-//! 
+//!
+//!
 //! ```rust
 //! use indexed_valued_enums::{Valued, enum_valued_as};
 //!
@@ -97,7 +97,7 @@
 //!     assert_eq!(Planet::Mercury, Planet::value_to_variant(&CelestialBody{ radius: 2439.7, gravity: 3.7 }));
 //! }
 //! ```
-//! 
+//!
 //! You can implement this on your enums using one of two macros:
 //! * [The declarative macro](#2a1-introductory-example-of-valued-enum-use-via-the-declarative-macro):
 //! On this one you write every variant along it's value, being really easy to write and read, and
@@ -113,16 +113,16 @@
 //! perfect scenario for the declarative macro instead. It requires you to add the 'derive' feature
 //! on your Cargo.toml, like
 //! ```indexed_valued_enums = { version =  "1.0.0", features=["derive", ...] }```.
-//! 
+//!
 //! ## 2.a.1 Introductory example of valued enum use via the declarative macro
 //! This creates a public enum where every Number has an associated value of type NumberDescription,
 //! just like in the introductory Derive example.
-//! 
+//!
 //! ```rust
 //! use indexed_valued_enums::create_indexed_valued_enum;
 //! use indexed_valued_enums::indexed_enum::Indexed;
 //! use indexed_valued_enums::valued_enum::Valued;
-//! 
+//!
 //! create_indexed_valued_enum! {
 //!     #[derive(Eq, PartialEq, Debug)]
 //!     //The double octothorpe is intentional
@@ -133,13 +133,13 @@
 //!     Second, NumberDescription { description: "Second position", index: 2 },
 //!     Third, NumberDescription { description: "Third position", index: 3 }
 //! }
-//! 
+//!
 //! #[derive(PartialEq)]
 //! pub struct NumberDescription {
 //!     description: &'static str,
 //!     index: u16,
 //! }
-//! 
+//!
 //! #[test]
 //! fn test() {
 //!     assert_eq!(Number::Zero.discriminant(), 0);
@@ -150,9 +150,9 @@
 //! }
 //! ```
 //! ## 2.a.2 How to use the declarative macro
-//! 
+//!
 //! Being a macro by rules, you only need to follow this pattern:
-//! 
+//!
 //! create_indexed_valued_enum!{ <br>
 //! &nbsp;&nbsp;&nbsp;&nbsp;	**Your metadata** //Like '#[derive(...)]', this is optional <br>
 //! &nbsp;&nbsp;&nbsp;&nbsp;	**##**[features(**Feature1**, **Feature2**, ...)] // this is optional, but it needs **two** octothorpes<br>
@@ -165,31 +165,31 @@
 //! &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN's metadata*** //this is optional<br>
 //! &nbsp;&nbsp;&nbsp;&nbsp;	***VariantN***, ***ValueN***<br>
 //! }
-//! 
+//!
 //! <br>
-//! 
+//!
 //! On each of these fields you can indicate different parameters to change the implementation of
 //! the enum:
-//! 
+//!
 //! * *EnumsName*: Name the enum will have.
 //! * *TypeOfValue*: type of the values the variant's resolve to.
 //! * Pairs of *Variant, Value*: Name of the variant's to create along to the name they resolve to,
 //!   the values must be const and have 'static lifetime.
 //! * *Features*: List of specific implementations you want your enum to use, see the section
 //!   [extra features](#3-extra-features) for more information about this.
-//! 
+//!
 //! Note: You can write metadata (Such as #[derive(...)]) before each pair of *Variant, Value*, and
 //! also before the enum, but it is required that the ##[features(...)] is the last of the enum's 
 //! declaration metadatas as this is not another metadata (hence the double octothorpe to denote
 //! it).
 //! <br>
-//! 
+//!
 //! ## 2.a.3 Other examples for the declarative macro
 //! A simple example could look like:
-//! 
+//!
 //! ```rust
 //! use indexed_valued_enums::create_indexed_valued_enum;
-//! 
+//!
 //! create_indexed_valued_enum! {
 //!     //Defines the enum and the value type it resolves to
 //!     pub enum MyOtherNumber valued as &'static str;
@@ -201,10 +201,10 @@
 //! }
 //! ```
 //! A more complex example could look like:
-//! 
+//!
 //! ```rust
 //! use indexed_valued_enums::create_indexed_valued_enum;
-//! 
+//!
 //! create_indexed_valued_enum! {
 //!     #[doc="This is a custom enum that can get values of &'static str!"]
 //!     //This enum derives certain traits, although you don't need to write this
@@ -221,14 +221,14 @@
 //!     Third,  "Third position"
 //! }
 //! ```
-//! 
+//!
 //! ## 2.b.1 Introductory example of valued enum use via the Derive macro
 //! This creates a public enum where every Number has an associated value of type NumberDescription,
 //! just like in the declarative macro example.
-//! 
+//!
 //! ```rust
 //! use indexed_valued_enums::{enum_valued_as, Valued};
-//! 
+//!
 //! #[derive(Eq, PartialEq, Debug, Valued)]
 //! #[enum_valued_as(NumberDescription)]
 //! pub enum Number{
@@ -241,7 +241,7 @@
 //!     #[value(NumberDescription { description: "Third position", index: 3 })]
 //!     Third,
 //! }
-//! 
+//!
 //! #[derive(PartialEq)]
 //! pub struct NumberDescription {
 //!     description: &'static str,
@@ -257,19 +257,19 @@
 //!         &NumberDescription { description: "Third position", index: 3 }));
 //! }
 //! ```
-//! 
+//!
 //! ## 2.b.2 How to use the Derive macro
-//! 
+//!
 //! **IMPORTANT**: To use it, the 'derive' feature should be indicated on your Cargo.toml, like
 //! ```indexed_valued_enums = { version =  "1.0.0", features=["derive", ...] }```.
-//! 
+//!
 //! **Basic implementation**: Add the derive [indexed_valued_enums::Valued] macro and then write the
 //! #[enum_valued_as(*Value type*)] attribute indicating the type your variants will resolve to,
 //! then on each variant write an attribute #[value(*this variants value*)]. this way: <br><br>
-//! 
+//!
 //! ```rust
 //! use indexed_valued_enums::{Valued, enum_valued_as};
-//! 
+//!
 //! #[derive(Valued)]
 //! #[enum_valued_as(u8)]
 //! pub enum MyEnum{
@@ -280,12 +280,12 @@
 //! }
 //! ```
 //! <br>
-//! 
+//!
 //! **Add extra functionality**: Below the Derive declaration you can write the attribute
 //! #[enum_valued_features(*Your desired features*)] which will automatically implement certain
 //! traits or functions which will become helpful, you can check these features on the section
 //! [extra features](#3-extra-features).<br>
-//! 
+//!
 //! ```rust ignore
 //! ...
 //! /// Adding 'Delegators' allows to call most of functions at
@@ -296,11 +296,11 @@
 //! }
 //! ```
 //! <br>
-//! 
+//!
 //! **Don't repeat yourself**: For variants whose variants values are often repeated or irrelevant
 //! you can use the attribute #[unvalued_default(*Your default value*)] which will make all these
 //! unvalued variants to resolve into said value.<br>
-//! 
+//!
 //! ```rust ignore
 //! ...
 //! #[unvalued_default(50)]
@@ -313,13 +313,13 @@
 //! }
 //! ```
 //! <br>
-//! 
+//!
 //! **Variant's with fields can be added too!** Unlike the declarative macro, this one is compatible
 //! with variants with fields, be them named or unnamed, but they have a downside: since the 
 //! [Indexed::from_discriminant] function must return a constant value for each variants, we also 
 //! need to create those variants with values at compile, when this situation arises you have two 
 //! options:
-//! 
+//!
 //! * Use the #[variant_initialize_uses(*Your default value*)]: Here you write the default contents
 //! for these variants, for example, if one was ```IP{host: &'static str, port: u16}```, you could
 //! write: #[variant_initialize_uses(host: "localhost", port: 8080)]<br><br>
@@ -327,7 +327,7 @@
 //! const-default in your Cargo.toml like ```const-default = { version =  "1.0.0" }``` and when this
 //! variant gets resolved from [Indexed::from_discriminant], it will return it with all fields as
 //! specified in [const_default::ConstDefault].
-//! 
+//!
 //! ```rust ignore
 //! ...
 //! pub enum MyEnum{
@@ -341,13 +341,13 @@
 //! }
 //! ```
 //! <br>
-//! 
+//!
 //! ## 2.b.3 Other examples for the derive macro
 //! A simple example could look like this:
-//! 
+//!
 //! ```rust
 //! use indexed_valued_enums::{Valued, enum_valued_as};
-//! 
+//!
 //! #[derive(Valued)]
 //! #[enum_valued_as(&'static str)]
 //! pub enum Number{
@@ -361,12 +361,12 @@
 //!     Third,
 //! }
 //! ```
-//! 
+//!
 //! A more complex example could look like:
-//! 
+//!
 //! ```rust
 //! use indexed_valued_enums::{Valued, enum_valued_as};
-//! 
+//!
 //! #[derive(Hash, Ord, PartialOrd, Eq, PartialEq, Debug)]
 //! #[derive(Valued)]
 //! #[enum_valued_as(&'static str)]
@@ -390,9 +390,9 @@
 //!     Third{my_age: u8, my_name:&'static str},
 //! }
 //! ```
-//! 
+//!
 //! ## 3 Extra features
-//! 
+//!
 //! * **DerefToValue**: Implements Deref, dereferencing each variant to a static reference of their
 //! value.<br><br>
 //! * **Clone**: Implements clone calling [from_discriminant], avoiding large expansions of the
@@ -421,10 +421,10 @@
 //! implementing these interfaces, so if you want to use the De/Serialization methods of
 //! nanoserde, then nanoserde must be a dependency on your Cargo.toml, thanks to this, you always
 //! have control over which version of Serde and NanoSerde is being applied.
-//! 
-//! 
+//!
+//!
 //! ## 4 Assumptions this crate does
-//! 
+//!
 //! * You won't rename this crates name or any of those used in the
 //! [extra features](#3-extra-features), this is because when expanding macros, it will try to
 //! target **your** dependencies, by doing this, you avoid longer compile times when this crate and
@@ -439,6 +439,16 @@
 //! '#[enum_valued_as(*Your type*)]' it silently adds #[repr(usize)], but if you were to use cargo
 //! expand and use the original code, the #[repr(usize)] attribute must remain.<br><br>
 
+
+#[cfg(feature = "derive")]
+extern crate indexed_valued_enums_derive;
+
+#[cfg(feature = "derive")]
+pub use indexed_valued_enums_derive::*;
+
+//The following uses are taken for documentation purposes
+use crate::indexed_enum::Indexed;
+use crate::valued_enum::Valued;
 
 /// Defines a trait to associate values to an enum
 pub mod valued_enum;
@@ -458,12 +468,3 @@ pub mod macros;
 #[cfg(feature = "serde")]
 pub mod serde_compatibility;
 
-//The following uses are taken for documentation purposes
-use crate::indexed_enum::Indexed;
-use crate::valued_enum::Valued;
-
-#[cfg(feature = "derive")]
-extern crate indexed_valued_enums_derive;
-
-#[cfg(feature = "derive")]
-pub use indexed_valued_enums_derive::{*};

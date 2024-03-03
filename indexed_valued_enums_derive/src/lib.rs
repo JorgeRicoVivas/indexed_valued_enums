@@ -1,6 +1,14 @@
+#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(test), no_main)]
+
+extern crate alloc;
 extern crate proc_macro;
 
+use alloc::format;
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use proc_macro::TokenStream;
+
 use proc_macro2::{Ident, Punct};
 use quote::{quote, ToTokens};
 use syn::{Attribute, DataEnum, DeriveInput, parse_macro_input, Type};
@@ -317,7 +325,7 @@ const DEBUG: bool = false;
 
 fn print_info(name: &str, info: &str) {
     if !DEBUG { return; }
-    eprintln!("--------------------- {} ---------------------\n", name);
-    eprintln!("{info}\n", );
-    eprintln!("-------------------------------------------------------------\n");
+    //eprintln!("--------------------- {} ---------------------\n", name);
+    //eprintln!("{info}\n", );
+    //eprintln!("-------------------------------------------------------------\n");
 }

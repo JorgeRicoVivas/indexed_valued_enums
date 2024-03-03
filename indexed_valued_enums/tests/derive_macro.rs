@@ -1,4 +1,4 @@
-use indexed_valued_enums_derive::{Valued, enum_valued_as};
+use indexed_valued_enums_derive::{enum_valued_as, Valued};
 
 #[derive(Clone, Debug, PartialEq, Valued)]
 #[enum_valued_as(u8)]
@@ -147,7 +147,7 @@ enum Planets {
 }
 
 #[test]
-fn example_test(){
+fn example_test() {
     //Identifiers mechanics
     assert_eq!(Planets::Mars, Planets::from_discriminant(1));
     assert_eq!(Planets::Mercury.discriminant(), 2);
@@ -155,5 +155,5 @@ fn example_test(){
     //Value mechanics
     assert_eq!(Planets::Earth.value().radius, 6357.0);
     assert_eq!(Planets::Mars.gravity, 3.71);
-    assert_eq!(Planets::Mercury, Planets::value_to_variant(&Planet{ radius: 2439.7, gravity: 3.7 }));
+    assert_eq!(Planets::Mercury, Planets::value_to_variant(&Planet { radius: 2439.7, gravity: 3.7 }));
 }

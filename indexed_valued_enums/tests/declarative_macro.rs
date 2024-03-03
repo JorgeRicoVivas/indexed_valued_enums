@@ -20,7 +20,7 @@ struct NumberDescription {
 fn test() {
     assert_eq!(Number::Zero.discriminant(), 0);
     assert_eq!(Number::First.value().description, "First position");
-    assert_eq!(Number::First.index,1);
+    assert_eq!(Number::First.index, 1);
     assert_eq!(Number::Second.clone(), Number::Second);
     assert_eq!(Number::Third, Number::value_to_variant(
         &NumberDescription { description: "Third position", index: 3 }));

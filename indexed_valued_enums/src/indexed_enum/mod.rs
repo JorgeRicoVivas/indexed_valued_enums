@@ -78,7 +78,7 @@ pub const fn from_discriminant_internal<TIndexed: Indexed>(discriminant: usize) 
 ///
 /// This internal function is used when using 'Delegators'.
 pub const fn from_discriminant_opt_internal<TIndexed: Indexed>(discriminant: usize) -> Option<TIndexed> {
-    if discriminant >= TIndexed::VARIANTS.len() { return None }
+    if discriminant >= TIndexed::VARIANTS.len() { return None; }
     let (first_offset, second_offset, third_offset) = split_usize_to_isizes(discriminant);
     Some(unsafe { TIndexed::VARIANTS.as_ptr().offset(first_offset).offset(second_offset).offset(third_offset).read() })
 }
