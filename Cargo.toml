@@ -2,6 +2,3 @@
 members = [
     "indexed_valued_enums", "indexed_valued_enums_derive",
 ]
-
-[patch.crates-io]
-indexed_valued_enums = { path = "indexed_valued_enums" }

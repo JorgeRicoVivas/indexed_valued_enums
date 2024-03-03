@@ -3,11 +3,11 @@ name = "indexed_valued_enums"
 version = "1.0.0"
 edition = "2021"
 authors = ["Jorge Rico Vivas <jorgericosoftware@gmail.com>"]
-license-file = "../LICENSE.txt"
 description = "Create enums resolving into values, and get their variants back through their values or their discriminant, inspired by Java."
 repository = "https://github.com/JorgeRicoVivas/indexed_valued_enums"
-keywords = ["valued", "enum"]
+keywords = ["valued", "enum", "discriminant", "index"]
 categories = ["no-std", "no-std::no-alloc", "rust-patterns"]
+license-file = "../LICENSE.txt"
 readme = "../README.md"
 
 [lib]
