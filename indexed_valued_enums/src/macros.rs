@@ -155,8 +155,10 @@ macro_rules! create_indexed_valued_enum {
             to this [", stringify!($enum_name),"] 's variant, this operation is O(1) as it just \
             gets the discriminant as a copy from \
             [indexed_valued_enums::valued_enum::Valued::VALUES] \
+            If you just need a reference to the value, use \
+            [",stringify!($enum_name),"::value_ref])] instead, as it doesn't require a read copy)
             <br><br>This always returns [Option::Some], so it's recommended to call\
-            [",stringify!($enum_name),"::value] instead")]
+            [",stringify!($enum_name),"::value] instead") <br>]
             pub const fn value_opt(&self) -> Option<$value_type> {
                 indexed_valued_enums::valued_enum::value_opt_internal(self)
             }
@@ -164,10 +166,31 @@ macro_rules! create_indexed_valued_enum {
             #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding \
             to this [", stringify!($enum_name),"] 's variant, this operation is O(1) as it just \
             gets the discriminant as a copy from \
-            [indexed_valued_enums::valued_enum::Valued::VALUES]")]
+            [indexed_valued_enums::valued_enum::Valued::VALUES]. <br>\
+            If you just need a reference to the value, use \
+            [",stringify!($enum_name),"::value_ref])] instead, as it doesn't require a read copy")]
             pub const fn value(&self) -> $value_type {
                 indexed_valued_enums::valued_enum::value_internal(self)
             }
+
+            #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding \
+            to this [", stringify!($enum_name),"] 's variant, if you need a copy of the value \
+            but the value doesn't implement Clone, use [",stringify!($enum_name),"::value_opt]\
+            instead, as it performs a read copy \
+            <br><br>This always returns [Option::Some], so it's recommended to call\
+            [",stringify!($enum_name),"::value] instead")]
+            pub const fn value_opt(&self) -> Option<&'static $value_type> {
+                indexed_valued_enums::valued_enum::value_ref_opt_internal(self)
+            }
+
+            #[doc = concat!("Gives the value of type [",stringify!($value_type),"] corresponding \
+            to this [", stringify!($enum_name),"] 's variant, if you need a copy of the value\
+            but the value doesn't implement Clone, use [",stringify!($value_type),"::value]"
+            instead as it performs a read copy)]
+            pub const fn value_ref(&self) -> &'static $value_type {
+                indexed_valued_enums::valued_enum::value_ref_internal(self)
+            }
+
         }
     };
     (process feature $enum_name:ident, $value_type:ty; ValueToVariantDelegators)

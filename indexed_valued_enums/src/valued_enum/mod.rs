@@ -44,6 +44,9 @@ pub trait Valued: Indexed {
     /// treated as a raw pointer whose value is read without cloning through
     /// [core::ptr::read]
     ///
+    /// If you just need a reference to the value, use [Valued::value_ref_opt] instead, as it doesn't
+    /// do a read copy.
+    ///
     /// Note that if implemented correctly (ensured by using [crate::create_indexed_valued_enum]),
     /// calling this method will always produce [Option::Some(Value)]
     fn value_opt(&self) -> Option<Self::Value> {
@@ -52,8 +55,37 @@ pub trait Valued: Indexed {
 
     /// Gives the value corresponding to this variant, this is an O(1) operation as it just gets the
     /// value as a copy from [Valued::VALUES]
+    /// If you just need a reference to the value, use [Valued::value_opt] instead, as it doesn't
+    /// do a read copy.
     fn value(&self) -> Self::Value {
         self.value_opt().unwrap()
+    }
+
+    /// Gives the value corresponding for a variant of an enum marked with #[repr(usize)] and
+    /// implementing the [Valued] trait, this is an O(1) operation as it just gets a reference to the
+    /// value as a copy.
+    ///
+    /// If you need the value as structure but it doesn't implement clone, use [value_opt_internal]
+    /// instead, as it performs a read copy
+    ///
+    /// Note that if implemented correctly (ensured by the declarative macro
+    /// [crate::create_indexed_valued_enum]), calling this method will always produce
+    /// [Option::Some(&Value)]
+    fn value_ref_opt(&self) -> Option<&'static Self::Value> {
+        value_ref_opt_internal(self)
+    }
+
+    /// Gives the value corresponding for a variant of an enum marked with #[repr(usize)] and
+    /// implementing the [Valued] trait, this is an O(1) operation as it just gets a reference to the
+    /// value as a copy.
+    ///
+    /// If you need the value as structure but it doesn't implement clone, use [value_internal]
+    /// instead, as it performs a read copy
+    ///
+    /// Note that if implemented correctly (ensured by the declarative macro
+    /// [crate::create_indexed_valued_enum]), calling this method will never panic
+    fn value_ref(&self) -> &'static Self::Value {
+        value_ref_internal(self)
     }
 
     /// Gives variant corresponding to a value, this is an O(n) operation as it does so by comparing
@@ -104,5 +136,36 @@ pub const fn value_internal<ValuedType: Valued>(variant: &ValuedType) -> ValuedT
     if discriminant >= ValuedType::VARIANTS.len() { panic!("Tried to get a variant's value whose index is larger than the amount of Variants") }
     let (first_offset, second_offset, third_offset) = split_usize_to_isizes(discriminant);
     unsafe { ValuedType::VALUES.as_ptr().offset(first_offset).offset(second_offset).offset(third_offset).read() }
+}
+
+/// Gives the value corresponding for a variant of an enum marked with #[repr(usize)] and
+/// implementing the [Valued] trait, this is an O(1) operation as it just gets a reference to the
+/// value as a copy.
+///
+/// If you need the value as structure but it doesn't implement clone, use [value_opt_internal]
+/// instead, as it performs a read copy
+///
+/// Note that if implemented correctly (ensured by the declarative macro
+/// [crate::create_indexed_valued_enum]), calling this method will always produce
+/// [Option::Some(&Value)]
+pub const fn value_ref_opt_internal<ValuedType: Valued>(variant: &ValuedType) -> Option<&'static ValuedType::Value> {
+    let discriminant = discriminant_internal(variant);
+    if discriminant >= ValuedType::VARIANTS.len() { return None; }
+    Some(&ValuedType::VALUES[discriminant])
+}
+
+/// Gives the value corresponding for a variant of an enum marked with #[repr(usize)] and
+/// implementing the [Valued] trait, this is an O(1) operation as it just gets a reference to the
+/// value as a copy.
+///
+/// If you need the value as structure but it doesn't implement clone, use [value_internal]
+/// instead, as it performs a read copy
+///
+/// Note that if implemented correctly (ensured by the declarative macro
+/// [crate::create_indexed_valued_enum]), calling this method will never panic
+pub const fn value_ref_internal<ValuedType: Valued>(variant: &ValuedType) -> &'static ValuedType::Value {
+    let discriminant = discriminant_internal(variant);
+    if discriminant >= ValuedType::VARIANTS.len() { panic!("Tried to get a variant's value whose index is larger than the amount of Variants") }
+    &ValuedType::VALUES[discriminant]
 }
 
