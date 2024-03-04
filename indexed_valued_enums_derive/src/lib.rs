@@ -176,7 +176,7 @@ pub fn derive_macro_describe(input: TokenStream) -> TokenStream {
     print_info("Derive input info", &*format!("{:#?}\n", parse_macro_input!(cloned_input as DeriveInput)));*/
     let DeriveInput { attrs, ident, data, .. } = parse_macro_input!(input as DeriveInput);
     match data {
-        Data::Struct(_) | Data::Union(_) => panic!("The 'Valued' derive macro targets c-like enums, not structs or union, consider removing '#[Derive(Valued)]' for this type"),
+        Data::Struct(_) | Data::Union(_) => panic!("The 'Valued' derive macro targets enums, not structs or union, consider removing '#[Derive(Valued)]' for this type"),
         Data::Enum(my_enum) => return derive_enum(&attrs, &ident, my_enum),
     };
 }
