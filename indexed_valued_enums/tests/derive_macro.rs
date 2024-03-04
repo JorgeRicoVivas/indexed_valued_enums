@@ -18,6 +18,7 @@ enum NumberValue {
 fn test_valued() {
     assert_eq!(NumberValue::Zero.discriminant(), 0);
     assert_eq!(NumberValue::First.value(), 1);
+    assert_eq!(NumberValue::First.value_ref(), &1);
     assert_eq!(*NumberValue::First, 1);
     assert_eq!(NumberValue::Second.clone(), NumberValue::Second);
     assert_eq!(NumberValue::Third, NumberValue::value_to_variant(&3));
@@ -45,6 +46,7 @@ enum NumberValueDefaulted {
 fn test_defaulted() {
     assert_eq!(NumberValueDefaulted::Zero.discriminant(), 0);
     assert_eq!(NumberValueDefaulted::First.value(), 1);
+    assert_eq!(NumberValueDefaulted::First.value_ref(), &1);
     assert_eq!(*NumberValueDefaulted::First, 1);
     assert_eq!(NumberValueDefaulted::Second.clone(), NumberValueDefaulted::Second);
     assert_eq!(NumberValueDefaulted::Third, NumberValueDefaulted::value_to_variant(&3));
@@ -77,6 +79,7 @@ enum NumberCustom {
 fn test_custom_type() {
     assert_eq!(NumberCustom::Zero.discriminant(), 0);
     assert_eq!(NumberCustom::First.value().num, 1);
+    assert_eq!(NumberCustom::First.value_ref().num, 1);
     assert_eq!(NumberCustom::Ten.num, 10);
     assert_eq!(NumberCustom::Ten.name, "Ten");
     assert_eq!(NumberCustom::Second.clone().num, NumberCustom::Second.num);
