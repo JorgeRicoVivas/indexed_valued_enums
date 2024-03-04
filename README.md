@@ -3,6 +3,8 @@
 [![docs.rs](https://img.shields.io/docsrs/indexed_valued_enums)](https://docs.rs/indexed_valued_enums/latest/indexed_valued_enums/)
 [![GitHub License](https://img.shields.io/github/license/JorgeRicoVivas/indexed_valued_enums)](https://github.com/JorgeRicoVivas/indexed_valued_enums?tab=CC0-1.0-1-ov-file)
 
+> *You are reading the documentation for indexed_valued_enums version 1.0.0*
+
 Create enums resolving into values and get their variants back through their values or their
 discriminant, inspired by Java's enums.
 
@@ -257,8 +259,10 @@ fn test() {
 
 ## 2.b.2 How to use the Derive macro
 
-**IMPORTANT**: To use it, the 'derive' feature should be indicated on your Cargo.toml, like
-```indexed_valued_enums = { version =  "1.0.0", features=["derive", ...] }```.
+> This requires 'derive' feature indicated on your Cargo.toml, like: 
+> ```toml 
+> indexed_valued_enums = { version =  "1.0.0", features=["derive", ...] }
+> ```.
 
 **Basic implementation**: Add the derive macro [indexed_valued_enums_derive::Valued] and then
 write the #[enum_valued_as(*Value type*)] attribute indicating the type your variants will
