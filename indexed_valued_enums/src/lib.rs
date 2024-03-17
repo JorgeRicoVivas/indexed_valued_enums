@@ -470,6 +470,5 @@ pub mod macros;
 /// ```toml
 /// indexed_valued_enums = { version = "0.8.0", features=["serde_enums"] }
 /// ```
-#[cfg(feature = "serde")]
+#[cfg(feature = "serde_enums")]
 pub mod serde_compatibility;
-
